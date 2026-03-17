@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Activity, ShieldAlert, Zap } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
+import { demoData } from '@/lib/demo/mockData';
 
 interface HeroSectionProps {
   mode: 'executivo' | 'operacional';
@@ -51,7 +52,7 @@ export function HeroSection({ mode, setMode }: HeroSectionProps) {
             <div className="text-right">
               <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Health Score</p>
               <div className="flex items-baseline justify-end gap-1">
-                <span className="font-sans text-3xl font-bold text-white">98.4</span>
+                <span className="font-sans text-3xl font-bold text-white">{demoData.hero.healthScore}</span>
                 <span className="text-voxx-cyan text-sm font-bold">%</span>
               </div>
             </div>
@@ -60,7 +61,7 @@ export function HeroSection({ mode, setMode }: HeroSectionProps) {
               <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Status</p>
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-voxx-cyan" />
-                <span className="text-sm font-bold text-white">Otimizado</span>
+                <span className="text-sm font-bold text-white">{demoData.hero.status}</span>
               </div>
             </div>
           </div>

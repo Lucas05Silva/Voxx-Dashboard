@@ -1,50 +1,42 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'motion/react';
-import { ChevronRight, TrendingUp, Users, DollarSign, AlertCircle } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, AlertCircle } from 'lucide-react';
+import { demoData } from '@/lib/demo/mockData';
 
-const kpis = [
-  {
-    id: 'faturamento',
-    label: 'Faturamento',
-    value: 'R$ 4.2M',
-    change: '+12.4%',
-    trend: 'up',
-    icon: DollarSign,
-    color: 'text-voxx-cyan',
-    glow: 'glow-cyan',
-  },
-  {
-    id: 'clientes',
-    label: 'Base Ativa',
-    value: '18,492',
-    change: '+3.2%',
-    trend: 'up',
-    icon: Users,
-    color: 'text-voxx-blue',
-    glow: '',
-  },
-  {
-    id: 'inadimplencia',
-    label: 'Inadimplência',
-    value: '4.8%',
-    change: '-1.1%',
-    trend: 'down',
-    icon: AlertCircle,
-    color: 'text-voxx-red',
-    glow: 'glow-red',
-  },
-  {
-    id: 'crescimento',
-    label: 'Crescimento',
-    value: '+8.4%',
-    change: '+2.1%',
-    trend: 'up',
-    icon: TrendingUp,
-    color: 'text-voxx-cyan',
-    glow: 'glow-cyan',
-  },
-];
+const iconById = {
+  faturamento: DollarSign,
+  clientes: Users,
+  inadimplencia: AlertCircle,
+  crescimento: TrendingUp,
+};
+
+const colorById = {
+  faturamento: 'text-voxx-cyan',
+  clientes: 'text-voxx-blue',
+  inadimplencia: 'text-voxx-red',
+  crescimento: 'text-voxx-cyan',
+};
+
+const glowById = {
+  faturamento: 'glow-cyan',
+  clientes: '',
+  inadimplencia: 'glow-red',
+  crescimento: 'glow-cyan',
+};
+
+const visibleKpis = demoData.kpis
+  .filter((kpi) => ['faturamento', 'clientes', 'inadimplencia', 'crescimento'].includes(kpi.id))
+  .map((kpi) => ({
+    ...kpi,
+    icon: iconById[kpi.id as keyof typeof iconById],
+    color: colorById[kpi.id as keyof typeof colorById],
+    glow: glowById[kpi.id as keyof typeof glowById],
+  }));
+
+const revenueBars = demoData.financial.history.map((item) => item.revenue);
+const minRevenue = Math.min(...revenueBars);
+const maxRevenue = Math.max(...revenueBars);
 
 export function KpiFlow() {
   return (
@@ -56,7 +48,7 @@ export function KpiFlow() {
       </h2>
 
       <div className="flex flex-col lg:flex-row items-stretch justify-between gap-0 relative group/flow">
-        {kpis.map((kpi, index) => (
+        {visibleKpis.map((kpi, index) => (
           <div key={kpi.id} className="flex items-center flex-1">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -73,23 +65,22 @@ export function KpiFlow() {
                     {kpi.change}
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="font-sans text-3xl font-bold text-white tracking-tight mb-1">{kpi.value}</p>
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{kpi.label}</p>
                 </div>
 
-                {/* Micro Chart Placeholder */}
                 <div className="mt-4 h-8 w-full flex items-end gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
-                  {[...Array(12)].map((_, i) => {
-                    // Deterministic pseudo-random height based on index and kpi.id
-                    const seed = kpi.id.charCodeAt(0) + i;
-                    const height = 30 + ((seed * 137) % 70);
+                  {revenueBars.map((value, i) => {
+                    const range = maxRevenue - minRevenue || 1;
+                    const normalized = (value - minRevenue) / range;
+                    const height = 30 + normalized * 70;
                     return (
-                      <div 
-                        key={i} 
-                        className={`flex-1 rounded-t-sm ${kpi.color.replace('text-', 'bg-')}`} 
-                        style={{ height: `${height}%`, opacity: 0.3 + (i * 0.05) }}
+                      <div
+                        key={i}
+                        className={`flex-1 rounded-t-sm ${kpi.color.replace('text-', 'bg-')}`}
+                        style={{ height: `${height}%`, opacity: 0.3 + i * 0.05 }}
                       />
                     );
                   })}
@@ -97,63 +88,58 @@ export function KpiFlow() {
               </div>
             </motion.div>
 
-            {/* Animated SVG Connection */}
-            {index < kpis.length - 1 && (
+            {index < visibleKpis.length - 1 && (
               <div className="hidden lg:block relative w-16 h-24 shrink-0 self-center z-0 -mx-2">
                 <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
                   <defs>
                     <linearGradient id={`grad-base-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
                       <stop offset="0%" stopColor="transparent" />
-                      <stop offset="50%" stopColor={kpis[index+1].color.includes('red') ? '#C62828' : '#00C2D1'} stopOpacity="0.2" />
+                      <stop offset="50%" stopColor={visibleKpis[index + 1].color.includes('red') ? '#C62828' : '#00C2D1'} stopOpacity="0.2" />
                       <stop offset="100%" stopColor="transparent" />
                     </linearGradient>
                     <linearGradient id={`grad-pulse-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
                       <stop offset="0%" stopColor="transparent" />
-                      <stop offset="50%" stopColor={kpis[index+1].color.includes('red') ? '#C62828' : '#00C2D1'} />
+                      <stop offset="50%" stopColor={visibleKpis[index + 1].color.includes('red') ? '#C62828' : '#00C2D1'} />
                       <stop offset="100%" stopColor="transparent" />
                     </linearGradient>
                   </defs>
 
-                  {/* Base faint track */}
-                  <path 
-                    d={index % 2 === 0 ? "M 0,50 C 30,20 70,80 100,50" : "M 0,50 C 30,80 70,20 100,50"} 
-                    stroke="var(--color-voxx-line)" 
-                    strokeWidth="1" 
-                    fill="none" 
+                  <path
+                    d={index % 2 === 0 ? 'M 0,50 C 30,20 70,80 100,50' : 'M 0,50 C 30,80 70,20 100,50'}
+                    stroke="var(--color-voxx-line)"
+                    strokeWidth="1"
+                    fill="none"
                     strokeDasharray="2 4"
                   />
-                  
-                  {/* Glowing core track */}
-                  <path 
-                    d={index % 2 === 0 ? "M 0,50 C 30,20 70,80 100,50" : "M 0,50 C 30,80 70,20 100,50"} 
-                    stroke={`url(#grad-base-${index})`} 
-                    strokeWidth="2" 
-                    fill="none" 
+
+                  <path
+                    d={index % 2 === 0 ? 'M 0,50 C 30,20 70,80 100,50' : 'M 0,50 C 30,80 70,20 100,50'}
+                    stroke={`url(#grad-base-${index})`}
+                    strokeWidth="2"
+                    fill="none"
                     className="opacity-50 group-hover/flow:opacity-100 transition-opacity duration-700"
                   />
 
-                  {/* Data Packet 1 (Main Pulse) */}
-                  <path 
-                    d={index % 2 === 0 ? "M 0,50 C 30,20 70,80 100,50" : "M 0,50 C 30,80 70,20 100,50"} 
-                    stroke={`url(#grad-pulse-${index})`} 
-                    strokeWidth="3" 
-                    fill="none" 
+                  <path
+                    d={index % 2 === 0 ? 'M 0,50 C 30,20 70,80 100,50' : 'M 0,50 C 30,80 70,20 100,50'}
+                    stroke={`url(#grad-pulse-${index})`}
+                    strokeWidth="3"
+                    fill="none"
                     strokeDasharray="20 180"
                     strokeLinecap="round"
                     className="animate-data-stream opacity-80 group-hover/flow:opacity-100 transition-opacity duration-300"
-                    style={{ filter: `drop-shadow(0 0 8px ${kpis[index+1].color.includes('red') ? '#C62828' : '#00C2D1'})` }}
+                    style={{ filter: `drop-shadow(0 0 8px ${visibleKpis[index + 1].color.includes('red') ? '#C62828' : '#00C2D1'})` }}
                   />
 
-                  {/* Data Packet 2 (Small fast particle) */}
-                  <path 
-                    d={index % 2 === 0 ? "M 0,50 C 30,20 70,80 100,50" : "M 0,50 C 30,80 70,20 100,50"} 
-                    stroke="#ffffff" 
-                    strokeWidth="1.5" 
-                    fill="none" 
+                  <path
+                    d={index % 2 === 0 ? 'M 0,50 C 30,20 70,80 100,50' : 'M 0,50 C 30,80 70,20 100,50'}
+                    stroke="#ffffff"
+                    strokeWidth="1.5"
+                    fill="none"
                     strokeDasharray="2 98"
                     strokeLinecap="round"
                     className="animate-data-stream-fast opacity-50 group-hover/flow:opacity-100"
-                    style={{ filter: `drop-shadow(0 0 4px #ffffff)` }}
+                    style={{ filter: 'drop-shadow(0 0 4px #ffffff)' }}
                   />
                 </svg>
               </div>
