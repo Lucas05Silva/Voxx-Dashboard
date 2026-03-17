@@ -64,7 +64,7 @@ const invoiceActionOptions: ActionOption[] = [
 
 const ticketActionOptions: ActionOption[] = [
   { key: 'abrir_atendimento', label: 'Abrir atendimento', helperText: 'Assume atendimento imediato do ticket.' },
-  { key: 'atualizar_status_ticket', label: 'Atualizar status de ticket', helperText: 'Move ticket para a proxima etapa.' },
+  { key: 'atualizar_status_ticket', label: 'Atualizar status de ticket', helperText: 'Move ticket para a próxima etapa.' },
   { key: 'atribuir_prioridade', label: 'Atribuir prioridade', helperText: 'Ajusta prioridade conforme impacto.' },
   { key: 'ver_detalhes_completos', label: 'Ver detalhes completos', helperText: 'Exibe timeline e anexos do ticket.' },
 ];
@@ -149,16 +149,25 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
   const [invoices, setInvoices] = useState<InvoiceRow[]>(data.operational.invoiceList);
   const [tickets, setTickets] = useState<TicketRow[]>(data.operational.ticketList);
   const [installations, setInstallations] = useState<InstallationRow[]>(data.operational.installationList);
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [modal, setModal] = useState<ActionModalState | null>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
   const [lastReportAt, setLastReportAt] = useState<string | null>(null);
 
   useEffect(() => {
-    setCustomers(data.operational.customersTable);
-    setInvoices(data.operational.invoiceList);
-    setTickets(data.operational.ticketList);
-    setInstallations(data.operational.installationList);
+    const syncTimer = setTimeout(() => {
+      setCustomers(data.operational.customersTable);
+      setInvoices(data.operational.invoiceList);
+      setTickets(data.operational.ticketList);
+      setInstallations(data.operational.installationList);
+      setModal(null);
+      setIsExecuting(false);
+    }, 0);
+
+    return () => {
+      clearTimeout(syncTimer);
+    };
   }, [data]);
 
   const selectedOptions = useMemo(() => {
@@ -172,7 +181,10 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
 
   const selectedOption = selectedOptions.find((option) => option.key === modal?.selected);
 
-  const closeModal = () => setModal(null);
+  const closeModal = () => {
+    if (isExecuting) return;
+    setModal(null);
+  };
 
   const toggleCard = (id: string) => {
     setExpandedCards((current) => ({
@@ -207,127 +219,138 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
   };
 
   const executeAction = () => {
-    if (!modal) return;
+    if (!modal || isExecuting) return;
+    setIsExecuting(true);
 
-    if (modal.context === 'report' && modal.selected === 'gerar_relatorio') {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      setLastReportAt(`${hh}:${mm}`);
-      showFeedback('Relatório operacional gerado com sucesso.');
-      closeModal();
-      return;
-    }
+    setTimeout(() => {
+      if (modal.context === 'report' && modal.selected === 'gerar_relatorio') {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        setLastReportAt(`${hh}:${mm}`);
+        showFeedback('Relatório operacional gerado com sucesso.');
+        setModal(null);
+        setIsExecuting(false);
+        return;
+      }
 
-    if (modal.context === 'customer') {
-      setCustomers((current) =>
-        current.map((row) => {
-          if (row.id !== modal.rowId) return row;
-          if (modal.selected === 'cobrar_cliente') {
-            showFeedback(`Mensagem de cobranca enviada para ${row.name}.`);
-            return { ...row, actionLabel: 'Cobrança enviada' };
-          }
-          if (modal.selected === 'suspender_cliente') {
-            showFeedback(`Cliente ${row.name} suspenso com sucesso.`);
-            void updateClientStatus(row.id, 'suspenso').catch(() => null);
-            return { ...row, status: 'suspenso', actionLabel: 'Reativar cliente' };
-          }
-          if (modal.selected === 'reativar_cliente') {
-            showFeedback(`Cliente ${row.name} reativado com sucesso.`);
-            void updateClientStatus(row.id, 'ativo').catch(() => null);
-            return { ...row, status: 'ativo', actionLabel: 'Ver detalhes' };
-          }
-          if (modal.selected === 'abrir_atendimento') {
-            showFeedback(`Atendimento aberto para ${row.name}.`, 'info');
-            return { ...row, actionLabel: 'Atendimento aberto' };
-          }
-          showFeedback(`Detalhes completos de ${row.name} exibidos.`, 'info');
-          return row;
-        }),
-      );
-      closeModal();
-      return;
-    }
-
-    if (modal.context === 'invoice') {
-      setInvoices((current) =>
-        current.map((row) => {
-          if (row.id !== modal.rowId) return row;
-          if (modal.selected === 'marcar_fatura_paga') {
-            showFeedback(`Fatura ${row.invoice} marcada como paga.`);
-            void markFinancialAsPaid(row.id).catch(() => null);
-            return { ...row, status: 'paga', actionLabel: 'Ver detalhes' };
-          }
-          if (modal.selected === 'enviar_aviso_vencimento') {
-            showFeedback(`Aviso de vencimento enviado para ${row.client}.`);
-            return { ...row, actionLabel: 'Aviso enviado' };
-          }
-          if (modal.selected === 'ver_historico_fatura') {
-            showFeedback(`Histórico da fatura ${row.invoice} aberto.`, 'info');
+      if (modal.context === 'customer') {
+        setCustomers((current) =>
+          current.map((row) => {
+            if (row.id !== modal.rowId) return row;
+            if (modal.selected === 'cobrar_cliente') {
+              showFeedback(`Mensagem de cobrança enviada para ${row.name}.`);
+              return { ...row, actionLabel: 'Cobrança enviada' };
+            }
+            if (modal.selected === 'suspender_cliente') {
+              showFeedback(`Cliente ${row.name} suspenso com sucesso.`);
+              void updateClientStatus(row.id, 'suspenso').catch(() => null);
+              return { ...row, status: 'suspenso', actionLabel: 'Reativar cliente' };
+            }
+            if (modal.selected === 'reativar_cliente') {
+              showFeedback(`Cliente ${row.name} reativado com sucesso.`);
+              void updateClientStatus(row.id, 'ativo').catch(() => null);
+              return { ...row, status: 'ativo', actionLabel: 'Ver detalhes' };
+            }
+            if (modal.selected === 'abrir_atendimento') {
+              showFeedback(`Atendimento aberto para ${row.name}.`, 'info');
+              return { ...row, actionLabel: 'Atendimento aberto' };
+            }
+            showFeedback(`Detalhes completos de ${row.name} exibidos.`, 'info');
             return row;
-          }
-          showFeedback(`Detalhes completos da fatura ${row.invoice} exibidos.`, 'info');
-          return row;
-        }),
-      );
-      closeModal();
-      return;
-    }
+          }),
+        );
+        setModal(null);
+        setIsExecuting(false);
+        return;
+      }
 
-    if (modal.context === 'ticket') {
-      setTickets((current) =>
-        current.map((row) => {
-          if (row.id !== modal.rowId) return row;
-          if (modal.selected === 'abrir_atendimento') {
-            showFeedback(`Ticket ${row.protocol} em atendimento.`);
-            void updateTicket(row.id, { status: 'em atendimento' }).catch(() => null);
-            return { ...row, status: 'em atendimento', actionLabel: 'Atualizar status' };
-          }
-          if (modal.selected === 'atualizar_status_ticket') {
-            const updatedStatus = nextTicketStatus(row.status as TicketRow['status']);
-            showFeedback(`Ticket ${row.protocol} atualizado para ${updatedStatus}.`);
-            void updateTicket(row.id, { status: updatedStatus as 'aberto' | 'em atendimento' | 'resolvido' }).catch(() => null);
-            return { ...row, status: updatedStatus };
-          }
-          if (modal.selected === 'atribuir_prioridade') {
-            const updatedPriority = nextTicketPriority(row.priority as TicketRow['priority']);
-            showFeedback(`Prioridade do ticket ${row.protocol} alterada para ${updatedPriority}.`);
-            void updateTicket(row.id, { priority: updatedPriority as 'alta' | 'media' | 'baixa' }).catch(() => null);
-            return { ...row, priority: updatedPriority };
-          }
-          showFeedback(`Detalhes completos do ticket ${row.protocol} exibidos.`, 'info');
-          return row;
-        }),
-      );
-      closeModal();
-      return;
-    }
-
-    if (modal.context === 'installation') {
-      setInstallations((current) =>
-        current.map((row) => {
-          if (row.id !== modal.rowId) return row;
-          if (modal.selected === 'reagendar_instalacao') {
-            const newDate = nextBrDate(row.scheduledDate);
-            showFeedback(`Instalação de ${row.client} reagendada para ${newDate}.`);
-            void updateInstallation(row.id, { status: 'reagendada', scheduled_date: newDate }).catch(() => null);
-            return { ...row, status: 'reagendada', scheduledDate: newDate, actionLabel: 'Confirmar agenda' };
-          }
-          if (modal.selected === 'marcar_instalacao_concluida') {
-            showFeedback(`Instalação de ${row.client} concluída com sucesso.`);
-            void updateInstallation(row.id, { status: 'concluida', completed_date: new Date().toISOString() }).catch(() => null);
-            return { ...row, status: 'concluida', actionLabel: 'Ver detalhes' };
-          }
-          if (modal.selected === 'ver_tecnico_responsavel') {
-            showFeedback(`Técnico responsável: ${row.technician}.`, 'info');
+      if (modal.context === 'invoice') {
+        setInvoices((current) =>
+          current.map((row) => {
+            if (row.id !== modal.rowId) return row;
+            if (modal.selected === 'marcar_fatura_paga') {
+              showFeedback(`Fatura ${row.invoice} marcada como paga.`);
+              void markFinancialAsPaid(row.id).catch(() => null);
+              return { ...row, status: 'paga', actionLabel: 'Ver detalhes' };
+            }
+            if (modal.selected === 'enviar_aviso_vencimento') {
+              showFeedback(`Aviso de vencimento enviado para ${row.client}.`);
+              return { ...row, actionLabel: 'Aviso enviado' };
+            }
+            if (modal.selected === 'ver_historico_fatura') {
+              showFeedback(`Histórico da fatura ${row.invoice} aberto.`, 'info');
+              return row;
+            }
+            showFeedback(`Detalhes completos da fatura ${row.invoice} exibidos.`, 'info');
             return row;
-          }
-          showFeedback(`Detalhes completos da OS ${row.id} exibidos.`, 'info');
-          return row;
-        }),
-      );
-      closeModal();
-    }
+          }),
+        );
+        setModal(null);
+        setIsExecuting(false);
+        return;
+      }
+
+      if (modal.context === 'ticket') {
+        setTickets((current) =>
+          current.map((row) => {
+            if (row.id !== modal.rowId) return row;
+            if (modal.selected === 'abrir_atendimento') {
+              showFeedback(`Ticket ${row.protocol} em atendimento.`);
+              void updateTicket(row.id, { status: 'em atendimento' }).catch(() => null);
+              return { ...row, status: 'em atendimento', actionLabel: 'Atualizar status' };
+            }
+            if (modal.selected === 'atualizar_status_ticket') {
+              const updatedStatus = nextTicketStatus(row.status as TicketRow['status']);
+              showFeedback(`Ticket ${row.protocol} atualizado para ${updatedStatus}.`);
+              void updateTicket(row.id, { status: updatedStatus as 'aberto' | 'em atendimento' | 'resolvido' }).catch(() => null);
+              return { ...row, status: updatedStatus };
+            }
+            if (modal.selected === 'atribuir_prioridade') {
+              const updatedPriority = nextTicketPriority(row.priority as TicketRow['priority']);
+              showFeedback(`Prioridade do ticket ${row.protocol} alterada para ${updatedPriority}.`);
+              void updateTicket(row.id, { priority: updatedPriority as 'alta' | 'media' | 'baixa' }).catch(() => null);
+              return { ...row, priority: updatedPriority };
+            }
+            showFeedback(`Detalhes completos do ticket ${row.protocol} exibidos.`, 'info');
+            return row;
+          }),
+        );
+        setModal(null);
+        setIsExecuting(false);
+        return;
+      }
+
+      if (modal.context === 'installation') {
+        setInstallations((current) =>
+          current.map((row) => {
+            if (row.id !== modal.rowId) return row;
+            if (modal.selected === 'reagendar_instalacao') {
+              const newDate = nextBrDate(row.scheduledDate);
+              showFeedback(`Instalação de ${row.client} reagendada para ${newDate}.`);
+              void updateInstallation(row.id, { status: 'reagendada', scheduled_date: newDate }).catch(() => null);
+              return { ...row, status: 'reagendada', scheduledDate: newDate, actionLabel: 'Confirmar agenda' };
+            }
+            if (modal.selected === 'marcar_instalacao_concluida') {
+              showFeedback(`Instalação de ${row.client} concluída com sucesso.`);
+              void updateInstallation(row.id, { status: 'concluida', completed_date: new Date().toISOString() }).catch(() => null);
+              return { ...row, status: 'concluida', actionLabel: 'Ver detalhes' };
+            }
+            if (modal.selected === 'ver_tecnico_responsavel') {
+              showFeedback(`Técnico responsável: ${row.technician}.`, 'info');
+              return row;
+            }
+            showFeedback(`Detalhes completos da OS ${row.id} exibidos.`, 'info');
+            return row;
+          }),
+        );
+        setModal(null);
+        setIsExecuting(false);
+        return;
+      }
+
+      setIsExecuting(false);
+    }, 1000);
   };
 
   return (
@@ -361,7 +384,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
                   <th className="pb-3 font-bold">Nome</th>
-                  <th className="pb-3 font-bold">Codigo</th>
+                  <th className="pb-3 font-bold">Código</th>
                   <th className="pb-3 font-bold">Plano</th>
                   <th className="pb-3 font-bold">Status</th>
                   <th className="pb-3 font-bold">Cidade</th>
@@ -520,7 +543,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   <th className="pb-3 font-bold">Cliente</th>
                   <th className="pb-3 font-bold">Prioridade</th>
                   <th className="pb-3 font-bold">Status</th>
-                  <th className="pb-3 font-bold">Responsavel</th>
+                  <th className="pb-3 font-bold">Responsável</th>
                   <th className="pb-3 font-bold">SLA</th>
                   <th className="pb-3 font-bold text-right">Ação</th>
                 </tr>
@@ -567,7 +590,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                 </div>
                 {expandedCards[`ticket-${ticket.id}`] ? (
                   <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
-                    <p className="text-xs text-gray-400">Responsavel: <span className="text-gray-200">{ticket.owner}</span></p>
+                    <p className="text-xs text-gray-400">Responsável: <span className="text-gray-200">{ticket.owner}</span></p>
                     <p className="text-xs text-gray-400">Status atual: <span className="text-gray-200">{capitalize(ticket.status)}</span></p>
                   </div>
                 ) : null}
@@ -674,10 +697,10 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan mb-2">Ação simulada</p>
-                  <h3 className="text-xl font-bold text-white">Painel de execucao</h3>
+                  <h3 className="text-xl font-bold text-white">Painel de execução</h3>
                   <p className="text-sm text-gray-400 mt-1">Selecione a ação e confirme para atualizar a interface localmente.</p>
                 </div>
-                <button onClick={closeModal} className="p-2 rounded-lg bg-voxx-block border border-voxx-line text-gray-400 hover:text-white transition-colors">
+                <button onClick={closeModal} disabled={isExecuting} className="p-2 rounded-lg bg-voxx-block border border-voxx-line text-gray-400 hover:text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -687,7 +710,8 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   <button
                     key={option.key}
                     onClick={() => setModal((prev) => (prev ? { ...prev, selected: option.key } : prev))}
-                    className={`text-left p-3 rounded-xl border transition-colors ${modal.selected === option.key ? 'border-voxx-cyan/60 bg-voxx-cyan/10' : 'border-voxx-line bg-voxx-surface/50 hover:border-voxx-cyan/40'}`}
+                    disabled={isExecuting}
+                    className={`text-left p-3 rounded-xl border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${modal.selected === option.key ? 'border-voxx-cyan/60 bg-voxx-cyan/10' : 'border-voxx-line bg-voxx-surface/50 hover:border-voxx-cyan/40'}`}
                   >
                     <p className="text-xs font-bold text-white uppercase tracking-wider">{option.label}</p>
                     <p className="text-xs text-gray-400 mt-1">{option.helperText}</p>
@@ -702,11 +726,11 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
               </div>
 
               <div className="flex justify-end gap-3">
-                <button onClick={closeModal} className="px-4 py-2 rounded-lg border border-voxx-line text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:border-gray-400 transition-colors">
+                <button onClick={closeModal} disabled={isExecuting} className="px-4 py-2 rounded-lg border border-voxx-line text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:border-gray-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                   Cancelar
                 </button>
-                <button onClick={executeAction} className="px-4 py-2 rounded-lg border border-voxx-cyan/50 bg-voxx-cyan/10 text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan transition-colors">
-                  Confirmar ação
+                <button onClick={executeAction} disabled={isExecuting} className="px-4 py-2 rounded-lg border border-voxx-cyan/50 bg-voxx-cyan/10 text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                  {isExecuting ? 'Executando...' : 'Confirmar ação'}
                 </button>
               </div>
             </motion.div>
