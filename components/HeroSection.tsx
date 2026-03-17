@@ -46,12 +46,12 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
         <div>
           <div className="mb-3">
             <Image
-              src="/voxx-logo-transparent-cropped.png"
+              src="/voxx-logo-clean.jpg"
               alt="VOXX Telecom"
               width={391}
               height={138}
               priority
-              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain select-none"
+              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain select-none mix-blend-multiply brightness-125 contrast-125 saturate-125"
             />
           </div>
           <div className="flex items-center gap-3 mb-2">
