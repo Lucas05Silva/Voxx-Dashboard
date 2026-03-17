@@ -5,10 +5,16 @@ import { BrainCircuit, Zap, AlertTriangle, TrendingUp } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
 
 const iconByPriority = {
-  high: AlertTriangle,
-  medium: TrendingUp,
-  low: Zap,
+  alta: AlertTriangle,
+  media: TrendingUp,
+  baixa: Zap,
 };
+
+function priorityLabel(value: string): string {
+  if (value === 'alta') return 'Alta';
+  if (value === 'media') return 'Media';
+  return 'Baixa';
+}
 
 export function AiCore() {
   return (
@@ -55,12 +61,12 @@ export function AiCore() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${insight.border} ${insight.color}`}>
-                        Prioridade {insight.priority}
+                        Prioridade {priorityLabel(insight.priority)}
                       </span>
                       <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Insight Automatico</span>
                     </div>
                     <h4 className="text-lg font-bold text-white mb-1">{insight.title}</h4>
-                    <p className="text-sm font-medium text-gray-400 leading-relaxed">{insight.suggestion}</p>
+                    <p className="text-sm font-medium text-gray-400 leading-relaxed">{insight.summary}</p>
                   </div>
 
                   <div className="sm:text-right w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-voxx-line">

@@ -4,6 +4,8 @@ export const supportSummary = {
   resolvedTickets: 329,
   sla: 91.8,
   avgServiceTimeMinutes: 38,
+  criticalTicketsCurrentWeek: 37,
+  criticalTicketsPreviousWeek: 33,
   priorityDistribution: [
     { priority: 'Alta', tickets: 18 },
     { priority: 'Media', tickets: 29 },

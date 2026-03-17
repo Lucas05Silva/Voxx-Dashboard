@@ -1,7 +1,10 @@
-import { customersByRegion, customersByStatus, operationalCustomers, plansDistribution } from '@/lib/demo/customersData';
+import { customersByRegion, customersByStatus, operationalCustomers, plansDistribution, regionDelinquency } from '@/lib/demo/customersData';
 import { financialHistory, projectedFinance } from '@/lib/demo/financialData';
 import { funnelData, installationsSummary, operationalInstallations } from '@/lib/demo/funnelData';
+import { generateAlerts } from '@/lib/demo/alertEngine';
+import { generateInsights } from '@/lib/demo/insightEngine';
 import { calculateChurn, calculateDelinquency, calculateFinancialRisk, calculateGrowth, calculatePercentageChange, formatCurrencyBRL, formatPercent, formatSignedPercent, getTrend } from '@/lib/demo/metrics';
+import { recommendationVisual } from '@/lib/demo/recommendationEngine';
 import { operationalTickets, supportSummary } from '@/lib/demo/supportData';
 
 const currentMonth = financialHistory[financialHistory.length - 1];
@@ -30,6 +33,29 @@ const healthScore = Math.max(
   74,
   Number((100 - currentMonth.delinquencyRate * 0.9 - currentMonth.churnRate * 1.2 - (supportSummary.openTickets / currentMonth.activeCustomers) * 100 * 0.7).toFixed(1)),
 );
+
+const topDelinquencyRegion = [...regionDelinquency].sort((a, b) => b.delinquencyRate - a.delinquencyRate)[0];
+
+const aiAlerts = generateAlerts({
+  delinquencyRate: currentMonth.delinquencyRate,
+  overdueAmount,
+  churnChange,
+  cancelledCustomers: currentMonth.cancelledCustomers,
+  criticalTicketsCurrentWeek: supportSummary.criticalTicketsCurrentWeek,
+  criticalTicketsPreviousWeek: supportSummary.criticalTicketsPreviousWeek,
+  topDelinquencyRegion,
+});
+
+const aiInsights = generateInsights({
+  churnRate: currentMonth.churnRate,
+  churnChange,
+  delinquencyRate: currentMonth.delinquencyRate,
+  overdueAmount,
+  activeCustomers: currentMonth.activeCustomers,
+  plans: plansDistribution,
+  regions: regionDelinquency,
+  averageTicket,
+});
 
 function getRiskStatus(score: number): string {
   if (score >= 90) return 'Otimizado';
@@ -126,6 +152,7 @@ export const demoData = {
     newCustomers: currentMonth.newCustomers,
     cancelledCustomers: currentMonth.cancelledCustomers,
     plansDistribution,
+    regionDelinquency,
     customersByRegion,
     customersByStatus,
     operationalCustomers,
@@ -169,77 +196,40 @@ export const demoData = {
     steps: funnelData,
   },
   alerts: [
-    {
-      id: 1,
-      type: 'Financeiro',
-      title: 'Inadimplencia acima da meta mensal',
-      description: `Taxa atual em ${formatPercent(currentMonth.delinquencyRate)} com ${formatCurrencyBRL(overdueAmount, true)} em atraso no ciclo atual.`,
-      impact: `${formatCurrencyBRL(overdueAmount, true)} em risco`,
-      suggestion: 'Intensificar campanha de renegociacao e bloqueio progressivo por faixa de atraso.',
-      priority: 'high',
-      color: 'text-voxx-red',
-      border: 'border-voxx-red/50',
-      glow: 'glow-red',
-      bg: 'bg-voxx-red/5',
-    },
-    {
-      id: 2,
-      type: 'Operacional',
-      title: 'Fila de suporte pressionada',
-      description: `${supportSummary.openTickets} tickets abertos e SLA em ${formatPercent(supportSummary.sla)} exigem reforco no pico noturno.`,
-      impact: 'Risco de queda no NPS',
-      suggestion: 'Realocar equipe do plantao e priorizar tickets de oscilacao de rede na regiao Sul.',
-      priority: 'medium',
-      color: 'text-voxx-cyan',
-      border: 'border-voxx-cyan/50',
-      glow: 'glow-cyan',
-      bg: 'bg-voxx-cyan/5',
-    },
-    {
-      id: 3,
-      type: 'Clientes',
-      title: 'Churn controlado, mas sensivel',
-      description: `Churn em ${formatPercent(currentMonth.churnRate)} com ${currentMonth.cancelledCustomers} cancelamentos no ultimo mes.`,
-      impact: `${currentMonth.cancelledCustomers} clientes perdidos`,
-      suggestion: 'Acionar oferta de upgrade para clientes em atraso antes da etapa de bloqueio.',
-      priority: 'low',
-      color: 'text-voxx-blue',
-      border: 'border-voxx-blue/50',
-      glow: '',
-      bg: 'bg-voxx-blue/5',
-    },
+    ...aiAlerts.map((alert) => {
+      const visual = recommendationVisual(alert);
+      return {
+        id: alert.id,
+        priority: alert.priority,
+        category: alert.category,
+        type: visual.typeLabel,
+        title: alert.title,
+        description: alert.summary,
+        impact: alert.impact,
+        suggestion: alert.suggestion,
+        color: visual.color,
+        border: visual.border,
+        glow: visual.glow,
+        bg: visual.bg,
+      };
+    }),
   ],
   insights: [
-    {
-      id: 1,
-      priority: 'high',
-      title: 'Risco de evasao em clientes em atraso',
-      impact: `- ${formatCurrencyBRL(overdueAmount * 0.42, true)}/mes`,
-      suggestion: 'Oferecer parcelamento em 2x para carteira em atraso acima de 45 dias.',
-      color: 'text-voxx-red',
-      border: 'border-voxx-red/30',
-      bg: 'bg-voxx-red/5',
-    },
-    {
-      id: 2,
-      priority: 'medium',
-      title: 'Upsell para planos de 700MB e 1GB',
-      impact: `+ ${formatCurrencyBRL(currentMonth.activeCustomers * 9.4, true)}/mes`,
-      suggestion: 'Campanha para base 300MB com bonus de fidelizacao de 6 meses.',
-      color: 'text-voxx-cyan',
-      border: 'border-voxx-cyan/30',
-      bg: 'bg-voxx-cyan/5',
-    },
-    {
-      id: 3,
-      priority: 'low',
-      title: 'Melhoria de produtividade no suporte',
-      impact: `- ${formatCurrencyBRL(supportSummary.openTickets * 165, true)}/mes (custo)`,
-      suggestion: 'Automatizar triagem de chamados repetitivos para reduzir TMA em 12%.',
-      color: 'text-voxx-blue',
-      border: 'border-voxx-blue/30',
-      bg: 'bg-voxx-blue/5',
-    },
+    ...aiInsights.map((insight) => {
+      const visual = recommendationVisual(insight);
+      return {
+        id: insight.id,
+        priority: insight.priority,
+        category: insight.category,
+        title: insight.title,
+        summary: insight.summary,
+        impact: insight.impact,
+        suggestion: insight.suggestion,
+        color: visual.color,
+        border: visual.border.replace('/50', '/30'),
+        bg: visual.bg,
+      };
+    }),
   ],
 };
 
