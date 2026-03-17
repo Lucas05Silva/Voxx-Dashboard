@@ -4,13 +4,13 @@ import { motion } from 'motion/react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { demoData } from '@/lib/demo/mockData';
 import { formatCurrencyBRL } from '@/lib/demo/metrics';
+import type { DashboardData } from '@/services/dataProvider';
 
-const data = [...demoData.financial.history, ...demoData.financial.projections];
+export function ChartsSection({ data: inputData = demoData }: { data?: DashboardData }) {
+  const data = [...inputData.financial.history, ...inputData.financial.projections];
+  const currentPoint = inputData.financial.history[inputData.financial.history.length - 1];
+  const projectedPoint = inputData.financial.projections[inputData.financial.projections.length - 1];
 
-const currentPoint = demoData.financial.history[demoData.financial.history.length - 1];
-const projectedPoint = demoData.financial.projections[demoData.financial.projections.length - 1];
-
-export function ChartsSection() {
   return (
     <section id="charts" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">
@@ -31,11 +31,11 @@ export function ChartsSection() {
           <div className="flex justify-between items-end mb-8 relative z-10">
             <div>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Receita Recorrente (MRR)</p>
-              <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueCurrent, true)} <span className="text-xs md:text-sm font-bold text-voxx-cyan">Atual</span></h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{formatCurrencyBRL(inputData.financial.revenueCurrent, true)} <span className="text-xs md:text-sm font-bold text-voxx-cyan">Atual</span></h3>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-bold text-voxx-cyan uppercase tracking-widest mb-1">Projecao IA ({projectedPoint.name})</p>
-              <p className="text-lg md:text-xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueProjection, true)}</p>
+              <p className="text-lg md:text-xl font-bold text-white tracking-tight">{formatCurrencyBRL(inputData.financial.revenueProjection, true)}</p>
             </div>
           </div>
 

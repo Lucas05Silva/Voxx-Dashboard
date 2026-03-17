@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Filter, UserCheck, CheckCircle2, ShieldCheck, FileText, Phone } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
+import type { DashboardData } from '@/services/dataProvider';
 
 const iconById = {
   leads: Filter,
@@ -31,13 +32,6 @@ const borderById = {
   retidos: 'border-voxx-red/50',
 };
 
-const funnelSteps = demoData.funnel.steps.map((step) => ({
-  ...step,
-  icon: iconById[step.id as keyof typeof iconById],
-  color: colorById[step.id as keyof typeof colorById],
-  border: borderById[step.id as keyof typeof borderById],
-}));
-
 function formatStepValue(value: number): string {
   if (value >= 1000) {
     return `${(value / 1000).toFixed(1)}K`;
@@ -45,7 +39,14 @@ function formatStepValue(value: number): string {
   return value.toString();
 }
 
-export function FunnelSection() {
+export function FunnelSection({ data = demoData }: { data?: DashboardData }) {
+  const funnelSteps = data.funnel.steps.map((step) => ({
+    ...step,
+    icon: iconById[step.id as keyof typeof iconById],
+    color: colorById[step.id as keyof typeof colorById],
+    border: borderById[step.id as keyof typeof borderById],
+  }));
+
   return (
     <section id="funnel" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">

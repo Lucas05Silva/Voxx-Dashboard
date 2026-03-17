@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { BrainCircuit, Zap, AlertTriangle, TrendingUp } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
+import type { DashboardData } from '@/services/dataProvider';
 
 const iconByPriority = {
   alta: AlertTriangle,
@@ -16,7 +17,7 @@ function priorityLabel(value: string): string {
   return 'Baixa';
 }
 
-export function AiCore() {
+export function AiCore({ data = demoData }: { data?: DashboardData }) {
   return (
     <section id="ai-core" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">
@@ -39,12 +40,12 @@ export function AiCore() {
             </div>
             <div className="mt-5 md:mt-8 text-center">
               <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2">Motor Preditivo Ativo</h3>
-              <p className="text-xs md:text-sm font-medium text-voxx-cyan uppercase tracking-wider md:tracking-widest">Analisando {demoData.customers.active.toLocaleString('pt-BR')} contratos ativos</p>
+              <p className="text-xs md:text-sm font-medium text-voxx-cyan uppercase tracking-wider md:tracking-widest">Analisando {data.customers.active.toLocaleString('pt-BR')} contratos ativos</p>
             </div>
           </div>
 
           <div className="w-full lg:w-2/3 grid gap-4">
-            {demoData.insights.map((insight, index) => {
+            {data.insights.map((insight, index) => {
               const InsightIcon = iconByPriority[insight.priority as keyof typeof iconByPriority];
               return (
                 <motion.div

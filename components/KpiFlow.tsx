@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { TrendingUp, Users, DollarSign, AlertCircle } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
+import type { DashboardData } from '@/services/dataProvider';
 
 const iconById = {
   faturamento: DollarSign,
@@ -25,20 +26,20 @@ const glowById = {
   crescimento: 'glow-cyan',
 };
 
-const visibleKpis = demoData.kpis
-  .filter((kpi) => ['faturamento', 'clientes', 'inadimplencia', 'crescimento'].includes(kpi.id))
-  .map((kpi) => ({
-    ...kpi,
-    icon: iconById[kpi.id as keyof typeof iconById],
-    color: colorById[kpi.id as keyof typeof colorById],
-    glow: glowById[kpi.id as keyof typeof glowById],
-  }));
+export function KpiFlow({ data = demoData }: { data?: DashboardData }) {
+  const visibleKpis = data.kpis
+    .filter((kpi) => ['faturamento', 'clientes', 'inadimplencia', 'crescimento'].includes(kpi.id))
+    .map((kpi) => ({
+      ...kpi,
+      icon: iconById[kpi.id as keyof typeof iconById],
+      color: colorById[kpi.id as keyof typeof colorById],
+      glow: glowById[kpi.id as keyof typeof glowById],
+    }));
 
-const revenueBars = demoData.financial.history.map((item) => item.revenue);
-const minRevenue = Math.min(...revenueBars);
-const maxRevenue = Math.max(...revenueBars);
+  const revenueBars = data.financial.history.map((item) => item.revenue);
+  const minRevenue = Math.min(...revenueBars);
+  const maxRevenue = Math.max(...revenueBars);
 
-export function KpiFlow() {
   return (
     <section id="kpi-flow" className="mb-8 md:mb-10 lg:mb-12 relative scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">

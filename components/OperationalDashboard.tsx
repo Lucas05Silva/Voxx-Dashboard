@@ -1,15 +1,17 @@
 ﻿'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Users, FileText, HeadphonesIcon, Wrench, ArrowUpRight, X, Download } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
 import { formatCurrencyBRL, formatPercent } from '@/lib/demo/metrics';
+import type { DashboardData } from '@/services/dataProvider';
+import { markFinancialAsPaid, updateClientStatus, updateInstallation, updateTicket } from '@/services/dataProvider';
 
-type CustomerRow = (typeof demoData.operational.customersTable)[number];
-type InvoiceRow = (typeof demoData.operational.invoiceList)[number];
-type TicketRow = (typeof demoData.operational.ticketList)[number];
-type InstallationRow = (typeof demoData.operational.installationList)[number];
+type CustomerRow = DashboardData['operational']['customersTable'][number];
+type InvoiceRow = DashboardData['operational']['invoiceList'][number];
+type TicketRow = DashboardData['operational']['ticketList'][number];
+type InstallationRow = DashboardData['operational']['installationList'][number];
 
 type ActionContext = 'customer' | 'invoice' | 'ticket' | 'installation' | 'report';
 type ActionKey =
@@ -118,13 +120,13 @@ function nextBrDate(date: string): string {
   return `${day}/${month}/${year}`;
 }
 
-function nextTicketStatus(status: string): string {
+function nextTicketStatus(status: TicketRow['status']): TicketRow['status'] {
   if (status === 'aberto') return 'em atendimento';
   if (status === 'em atendimento') return 'resolvido';
   return 'aberto';
 }
 
-function nextTicketPriority(priority: string): string {
+function nextTicketPriority(priority: TicketRow['priority']): TicketRow['priority'] {
   if (priority === 'baixa') return 'media';
   if (priority === 'media') return 'alta';
   return 'baixa';
@@ -142,15 +144,22 @@ function ActionButton({ label, onClick }: { label: string; onClick: () => void }
   );
 }
 
-export function OperationalDashboard() {
-  const [customers, setCustomers] = useState<CustomerRow[]>(demoData.operational.customersTable);
-  const [invoices, setInvoices] = useState<InvoiceRow[]>(demoData.operational.invoiceList);
-  const [tickets, setTickets] = useState<TicketRow[]>(demoData.operational.ticketList);
-  const [installations, setInstallations] = useState<InstallationRow[]>(demoData.operational.installationList);
+export function OperationalDashboard({ data = demoData }: { data?: DashboardData }) {
+  const [customers, setCustomers] = useState<CustomerRow[]>(data.operational.customersTable);
+  const [invoices, setInvoices] = useState<InvoiceRow[]>(data.operational.invoiceList);
+  const [tickets, setTickets] = useState<TicketRow[]>(data.operational.ticketList);
+  const [installations, setInstallations] = useState<InstallationRow[]>(data.operational.installationList);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [modal, setModal] = useState<ActionModalState | null>(null);
   const [lastReportAt, setLastReportAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCustomers(data.operational.customersTable);
+    setInvoices(data.operational.invoiceList);
+    setTickets(data.operational.ticketList);
+    setInstallations(data.operational.installationList);
+  }, [data]);
 
   const selectedOptions = useMemo(() => {
     if (!modal) return [];
@@ -220,10 +229,12 @@ export function OperationalDashboard() {
           }
           if (modal.selected === 'suspender_cliente') {
             showFeedback(`Cliente ${row.name} suspenso com sucesso.`);
+            void updateClientStatus(row.id, 'suspenso').catch(() => null);
             return { ...row, status: 'suspenso', actionLabel: 'Reativar cliente' };
           }
           if (modal.selected === 'reativar_cliente') {
             showFeedback(`Cliente ${row.name} reativado com sucesso.`);
+            void updateClientStatus(row.id, 'ativo').catch(() => null);
             return { ...row, status: 'ativo', actionLabel: 'Ver detalhes' };
           }
           if (modal.selected === 'abrir_atendimento') {
@@ -244,6 +255,7 @@ export function OperationalDashboard() {
           if (row.id !== modal.rowId) return row;
           if (modal.selected === 'marcar_fatura_paga') {
             showFeedback(`Fatura ${row.invoice} marcada como paga.`);
+            void markFinancialAsPaid(row.id).catch(() => null);
             return { ...row, status: 'paga', actionLabel: 'Ver detalhes' };
           }
           if (modal.selected === 'enviar_aviso_vencimento') {
@@ -268,16 +280,19 @@ export function OperationalDashboard() {
           if (row.id !== modal.rowId) return row;
           if (modal.selected === 'abrir_atendimento') {
             showFeedback(`Ticket ${row.protocol} em atendimento.`);
+            void updateTicket(row.id, { status: 'em atendimento' }).catch(() => null);
             return { ...row, status: 'em atendimento', actionLabel: 'Atualizar status' };
           }
           if (modal.selected === 'atualizar_status_ticket') {
-            const updatedStatus = nextTicketStatus(row.status);
+            const updatedStatus = nextTicketStatus(row.status as TicketRow['status']);
             showFeedback(`Ticket ${row.protocol} atualizado para ${updatedStatus}.`);
+            void updateTicket(row.id, { status: updatedStatus as 'aberto' | 'em atendimento' | 'resolvido' }).catch(() => null);
             return { ...row, status: updatedStatus };
           }
           if (modal.selected === 'atribuir_prioridade') {
-            const updatedPriority = nextTicketPriority(row.priority);
+            const updatedPriority = nextTicketPriority(row.priority as TicketRow['priority']);
             showFeedback(`Prioridade do ticket ${row.protocol} alterada para ${updatedPriority}.`);
+            void updateTicket(row.id, { priority: updatedPriority as 'alta' | 'media' | 'baixa' }).catch(() => null);
             return { ...row, priority: updatedPriority };
           }
           showFeedback(`Detalhes completos do ticket ${row.protocol} exibidos.`, 'info');
@@ -295,10 +310,12 @@ export function OperationalDashboard() {
           if (modal.selected === 'reagendar_instalacao') {
             const newDate = nextBrDate(row.scheduledDate);
             showFeedback(`Instalacao de ${row.client} reagendada para ${newDate}.`);
+            void updateInstallation(row.id, { status: 'reagendada', scheduled_date: newDate }).catch(() => null);
             return { ...row, status: 'reagendada', scheduledDate: newDate, actionLabel: 'Confirmar agenda' };
           }
           if (modal.selected === 'marcar_instalacao_concluida') {
             showFeedback(`Instalacao de ${row.client} concluida com sucesso.`);
+            void updateInstallation(row.id, { status: 'concluida', completed_date: new Date().toISOString() }).catch(() => null);
             return { ...row, status: 'concluida', actionLabel: 'Ver detalhes' };
           }
           if (modal.selected === 'ver_tecnico_responsavel') {
@@ -337,7 +354,7 @@ export function OperationalDashboard() {
               <Users className="w-4 h-4 text-voxx-cyan" />
               Tabela de Clientes
             </h2>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(demoData.checks.delinquencyCheck)}</span></span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(data.checks.delinquencyCheck)}</span></span>
           </div>
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
@@ -417,7 +434,7 @@ export function OperationalDashboard() {
               <FileText className="w-4 h-4 text-voxx-blue" />
               Lista Financeira
             </h2>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Contas em atraso: <span className="text-voxx-red">{demoData.financial.overdueAccounts}</span></span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Contas em atraso: <span className="text-voxx-red">{data.financial.overdueAccounts}</span></span>
           </div>
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px]">

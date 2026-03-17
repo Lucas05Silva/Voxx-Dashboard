@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { AlertCircle, ArrowUpRight, Activity, Users } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
+import type { DashboardData } from '@/services/dataProvider';
 
 const iconByType = {
   Financeiro: AlertCircle,
@@ -10,7 +11,7 @@ const iconByType = {
   Clientes: Users,
 };
 
-export function AlertsSection() {
+export function AlertsSection({ data = demoData }: { data?: DashboardData }) {
   return (
     <section id="alerts" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <div className="flex items-center justify-between mb-6">
@@ -24,7 +25,7 @@ export function AlertsSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-        {demoData.alerts.map((alert, index) => {
+        {data.alerts.map((alert, index) => {
           const AlertIcon = iconByType[alert.type as keyof typeof iconByType];
           return (
             <motion.div
