@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import Image from 'next/image';
 import { Menu, ShieldAlert, X } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
 import type { DashboardData } from '@/services/dataProvider';
@@ -44,20 +43,13 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
 
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <div className="mb-3">
-            <Image
-              src="/voxx-logo-clean.jpg"
-              alt="VOXX Telecom"
-              width={391}
-              height={138}
-              priority
-              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain select-none mix-blend-multiply brightness-125 contrast-125 saturate-125"
-            />
-          </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="h-2 w-2 rounded-full bg-voxx-cyan animate-pulse glow-cyan" />
             <span className="text-voxx-cyan text-xs font-bold tracking-[0.2em] uppercase">System Online</span>
           </div>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
+            VOXX <span className="text-transparent bg-clip-text bg-gradient-to-r from-voxx-cyan to-voxx-blue">AI</span> ANALYTICS
+          </h1>
           <p className="text-gray-400 text-sm md:text-base font-medium tracking-wide">
             {mode === 'executivo' ? 'Centro de Comando Executivo & Inteligência Preditiva' : 'Painel de Controle Operacional & Gestão'}
           </p>
