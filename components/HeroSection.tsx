@@ -44,23 +44,20 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
 
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <div className="mb-4">
+          <div className="mb-3">
             <Image
-              src="/voxx-logo-transparent.png"
+              src="/voxx-logo-transparent-cropped.png"
               alt="VOXX Telecom"
-              width={210}
-              height={64}
+              width={391}
+              height={138}
               priority
-              className="h-9 sm:h-10 md:h-11 w-auto object-contain select-none"
+              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain select-none"
             />
           </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="h-2 w-2 rounded-full bg-voxx-cyan animate-pulse glow-cyan" />
             <span className="text-voxx-cyan text-xs font-bold tracking-[0.2em] uppercase">System Online</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
-            VOXX <span className="text-transparent bg-clip-text bg-gradient-to-r from-voxx-cyan to-voxx-blue">AI</span> ANALYTICS
-          </h1>
           <p className="text-gray-400 text-sm md:text-base font-medium tracking-wide">
             {mode === 'executivo' ? 'Centro de Comando Executivo & Inteligência Preditiva' : 'Painel de Controle Operacional & Gestão'}
           </p>
