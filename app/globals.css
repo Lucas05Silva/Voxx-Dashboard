@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-voxx-red: #C62828;
+  --color-voxx-red-light: #E53935;
+  --color-voxx-blue: #1F4E5F;
+  --color-voxx-cyan: #00C2D1;
+  --color-voxx-bg: #071018;
+  --color-voxx-surface: #0B1620;
+  --color-voxx-block: #0E1C27;
+  --color-voxx-line: rgba(255, 255, 255, 0.06);
+  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-voxx-bg);
+    color: white;
+    /* Subtle tech texture and light points */
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(0, 194, 209, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(198, 40, 40, 0.05) 0%, transparent 40%),
+      linear-gradient(var(--color-voxx-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-voxx-line) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sora);
+  }
+
+  @keyframes data-stream {
+    from {
+      stroke-dashoffset: 200;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes data-stream-reverse {
+    from {
+      stroke-dashoffset: 0;
+    }
+    to {
+      stroke-dashoffset: 200;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-data-stream {
+    animation: data-stream 2.5s linear infinite;
+  }
+  .animate-data-stream-fast {
+    animation: data-stream 1.2s linear infinite;
+  }
+  .animate-data-stream-slow {
+    animation: data-stream 4s linear infinite;
+  }
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 194, 209, 0.2);
+  }
+  .glow-red {
+    box-shadow: 0 0 20px rgba(198, 40, 40, 0.2);
+  }
+  .glow-red-light {
+    box-shadow: 0 0 20px rgba(229, 57, 53, 0.2);
+  }
+  .border-glow-cyan {
+    border: 1px solid rgba(0, 194, 209, 0.3);
+    box-shadow: inset 0 0 10px rgba(0, 194, 209, 0.1);
+  }
+  .border-glow-red {
+    border: 1px solid rgba(198, 40, 40, 0.3);
+    box-shadow: inset 0 0 10px rgba(198, 40, 40, 0.1);
+  }
+  .glass-panel {
+    background: linear-gradient(180deg, rgba(11, 22, 32, 0.8) 0%, rgba(14, 28, 39, 0.9) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-voxx-line);
+  }
+}
