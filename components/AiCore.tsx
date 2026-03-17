@@ -13,7 +13,7 @@ const iconByPriority = {
 
 function priorityLabel(value: string): string {
   if (value === 'alta') return 'Alta';
-  if (value === 'media') return 'Media';
+  if (value === 'media') return 'Média';
   return 'Baixa';
 }
 
@@ -64,7 +64,7 @@ export function AiCore({ data = demoData }: { data?: DashboardData }) {
                       <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border border-voxx-line/80 bg-voxx-surface/70 ${insight.color}`}>
                         Prioridade {priorityLabel(insight.priority)}
                       </span>
-                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Insight Automatico</span>
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Insight Automático</span>
                     </div>
                     <h4 className="text-lg font-bold text-white mb-1">{insight.title}</h4>
                     <p className="text-sm font-medium text-gray-400 leading-relaxed">{insight.summary}</p>
@@ -74,7 +74,7 @@ export function AiCore({ data = demoData }: { data?: DashboardData }) {
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Impacto Projetado</p>
                     <p className={`text-xl font-bold tracking-tight ${insight.color}`}>{insight.impact}</p>
                     <button className="mt-3 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-voxx-surface to-voxx-block border border-voxx-cyan/35 text-xs font-bold text-white uppercase tracking-wider shadow-[0_6px_16px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:border-voxx-cyan/60 hover:shadow-[0_10px_22px_rgba(0,194,209,0.18)] active:translate-y-0">
-                      Executar Acao
+                      Executar Ação
                     </button>
                   </div>
                 </motion.div>

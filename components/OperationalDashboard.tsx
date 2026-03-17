@@ -49,16 +49,16 @@ interface FeedbackState {
 
 const customerActionOptions: ActionOption[] = [
   { key: 'ver_detalhes_completos', label: 'Ver detalhes completos', helperText: 'Abrir resumo completo do cliente.' },
-  { key: 'cobrar_cliente', label: 'Cobrar cliente inadimplente', helperText: 'Enviar mensagem automatica de cobranca.' },
-  { key: 'suspender_cliente', label: 'Suspender cliente', helperText: 'Suspender acesso por inadimplencia.' },
-  { key: 'reativar_cliente', label: 'Reativar cliente', helperText: 'Reativar acesso apos regularizacao.' },
-  { key: 'abrir_atendimento', label: 'Abrir atendimento', helperText: 'Criar atendimento comercial para retencao.' },
+  { key: 'cobrar_cliente', label: 'Cobrar cliente inadimplente', helperText: 'Enviar mensagem automática de cobrança.' },
+  { key: 'suspender_cliente', label: 'Suspender cliente', helperText: 'Suspender acesso por inadimplência.' },
+  { key: 'reativar_cliente', label: 'Reativar cliente', helperText: 'Reativar acesso após regularização.' },
+  { key: 'abrir_atendimento', label: 'Abrir atendimento', helperText: 'Criar atendimento comercial para retenção.' },
 ];
 
 const invoiceActionOptions: ActionOption[] = [
   { key: 'marcar_fatura_paga', label: 'Marcar fatura como paga', helperText: 'Atualiza status financeiro para pago.' },
   { key: 'enviar_aviso_vencimento', label: 'Enviar aviso de vencimento', helperText: 'Dispara aviso por canal cadastrado.' },
-  { key: 'ver_historico_fatura', label: 'Ver historico', helperText: 'Exibe historico de pagamentos e eventos.' },
+  { key: 'ver_historico_fatura', label: 'Ver histórico', helperText: 'Exibe histórico de pagamentos e eventos.' },
   { key: 'ver_detalhes_completos', label: 'Ver detalhes completos', helperText: 'Abrir dados detalhados da fatura.' },
 ];
 
@@ -70,14 +70,14 @@ const ticketActionOptions: ActionOption[] = [
 ];
 
 const installationActionOptions: ActionOption[] = [
-  { key: 'reagendar_instalacao', label: 'Reagendar instalacao', helperText: 'Move instalacao para nova data.' },
-  { key: 'marcar_instalacao_concluida', label: 'Marcar como concluida', helperText: 'Finaliza OS e atualiza status.' },
-  { key: 'ver_tecnico_responsavel', label: 'Ver tecnico responsavel', helperText: 'Exibe dados e contato do tecnico.' },
+  { key: 'reagendar_instalacao', label: 'Reagendar instalação', helperText: 'Move instalação para nova data.' },
+  { key: 'marcar_instalacao_concluida', label: 'Marcar como concluída', helperText: 'Finaliza OS e atualiza status.' },
+  { key: 'ver_tecnico_responsavel', label: 'Ver técnico responsável', helperText: 'Exibe dados e contato do técnico.' },
   { key: 'ver_detalhes_completos', label: 'Ver detalhes completos', helperText: 'Abrir detalhes completos da OS.' },
 ];
 
 const reportActionOptions: ActionOption[] = [
-  { key: 'gerar_relatorio', label: 'Gerar relatorio', helperText: 'Cria relatorio operacional consolidado.' },
+  { key: 'gerar_relatorio', label: 'Gerar relatório', helperText: 'Cria relatório operacional consolidado.' },
 ];
 
 function customerStatusClass(status: string): string {
@@ -214,7 +214,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
       const hh = String(now.getHours()).padStart(2, '0');
       const mm = String(now.getMinutes()).padStart(2, '0');
       setLastReportAt(`${hh}:${mm}`);
-      showFeedback('Relatorio operacional gerado com sucesso.');
+      showFeedback('Relatório operacional gerado com sucesso.');
       closeModal();
       return;
     }
@@ -225,7 +225,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
           if (row.id !== modal.rowId) return row;
           if (modal.selected === 'cobrar_cliente') {
             showFeedback(`Mensagem de cobranca enviada para ${row.name}.`);
-            return { ...row, actionLabel: 'Cobranca enviada' };
+            return { ...row, actionLabel: 'Cobrança enviada' };
           }
           if (modal.selected === 'suspender_cliente') {
             showFeedback(`Cliente ${row.name} suspenso com sucesso.`);
@@ -263,7 +263,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
             return { ...row, actionLabel: 'Aviso enviado' };
           }
           if (modal.selected === 'ver_historico_fatura') {
-            showFeedback(`Historico da fatura ${row.invoice} aberto.`, 'info');
+            showFeedback(`Histórico da fatura ${row.invoice} aberto.`, 'info');
             return row;
           }
           showFeedback(`Detalhes completos da fatura ${row.invoice} exibidos.`, 'info');
@@ -309,17 +309,17 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
           if (row.id !== modal.rowId) return row;
           if (modal.selected === 'reagendar_instalacao') {
             const newDate = nextBrDate(row.scheduledDate);
-            showFeedback(`Instalacao de ${row.client} reagendada para ${newDate}.`);
+            showFeedback(`Instalação de ${row.client} reagendada para ${newDate}.`);
             void updateInstallation(row.id, { status: 'reagendada', scheduled_date: newDate }).catch(() => null);
             return { ...row, status: 'reagendada', scheduledDate: newDate, actionLabel: 'Confirmar agenda' };
           }
           if (modal.selected === 'marcar_instalacao_concluida') {
-            showFeedback(`Instalacao de ${row.client} concluida com sucesso.`);
+            showFeedback(`Instalação de ${row.client} concluída com sucesso.`);
             void updateInstallation(row.id, { status: 'concluida', completed_date: new Date().toISOString() }).catch(() => null);
             return { ...row, status: 'concluida', actionLabel: 'Ver detalhes' };
           }
           if (modal.selected === 'ver_tecnico_responsavel') {
-            showFeedback(`Tecnico responsavel: ${row.technician}.`, 'info');
+            showFeedback(`Técnico responsável: ${row.technician}.`, 'info');
             return row;
           }
           showFeedback(`Detalhes completos da OS ${row.id} exibidos.`, 'info');
@@ -338,12 +338,12 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
           className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-4 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan/50 transition-colors"
         >
           <Download className="w-4 h-4" />
-          Gerar relatorio
+          Gerar relatório
         </button>
       </div>
 
       {lastReportAt ? (
-        <div className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-500">Ultimo relatorio gerado as <span className="text-voxx-cyan">{lastReportAt}</span></div>
+        <div className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-500">Último relatório gerado às <span className="text-voxx-cyan">{lastReportAt}</span></div>
       ) : null}
 
       <section id="ops-clients" className="glass-panel p-4 md:p-6 rounded-2xl border-voxx-line relative overflow-hidden group scroll-mt-24">
@@ -354,7 +354,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
               <Users className="w-4 h-4 text-voxx-cyan" />
               Tabela de Clientes
             </h2>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(data.checks.delinquencyCheck)}</span></span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplência atual: <span className="text-voxx-red">{formatPercent(data.checks.delinquencyCheck)}</span></span>
           </div>
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
@@ -367,7 +367,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   <th className="pb-3 font-bold">Cidade</th>
                   <th className="pb-3 font-bold">Valor mensal</th>
                   <th className="pb-3 font-bold">Vencimento</th>
-                  <th className="pb-3 font-bold text-right">Acao</th>
+                  <th className="pb-3 font-bold text-right">Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -445,7 +445,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   <th className="pb-3 font-bold">Valor</th>
                   <th className="pb-3 font-bold">Vencimento</th>
                   <th className="pb-3 font-bold">Status</th>
-                  <th className="pb-3 font-bold text-right">Acao</th>
+                  <th className="pb-3 font-bold text-right">Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -522,7 +522,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   <th className="pb-3 font-bold">Status</th>
                   <th className="pb-3 font-bold">Responsavel</th>
                   <th className="pb-3 font-bold">SLA</th>
-                  <th className="pb-3 font-bold text-right">Acao</th>
+                  <th className="pb-3 font-bold text-right">Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -586,7 +586,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
               <Wrench className="w-4 h-4 text-emerald-400" />
-              Lista de Instalacoes
+              Lista de Instalações
             </h2>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pendentes: <span className="text-yellow-400">{installations.filter((item) => item.status === 'pendente').length}</span></span>
           </div>
@@ -596,10 +596,10 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
                   <th className="pb-3 font-bold">Cliente</th>
                   <th className="pb-3 font-bold">Plano</th>
-                  <th className="pb-3 font-bold">Tecnico</th>
+                  <th className="pb-3 font-bold">Técnico</th>
                   <th className="pb-3 font-bold">Status</th>
                   <th className="pb-3 font-bold">Data agendada</th>
-                  <th className="pb-3 font-bold text-right">Acao</th>
+                  <th className="pb-3 font-bold text-right">Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -643,7 +643,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                 </div>
                 {expandedCards[`installation-${installation.id}`] ? (
                   <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
-                    <p className="text-xs text-gray-400">Tecnico: <span className="text-gray-200">{installation.technician}</span></p>
+                    <p className="text-xs text-gray-400">Técnico: <span className="text-gray-200">{installation.technician}</span></p>
                     <p className="text-xs text-gray-400">Status: <span className="text-gray-200">{installation.status}</span></p>
                   </div>
                 ) : null}
@@ -673,9 +673,9 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
             >
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan mb-2">Acao simulada</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan mb-2">Ação simulada</p>
                   <h3 className="text-xl font-bold text-white">Painel de execucao</h3>
-                  <p className="text-sm text-gray-400 mt-1">Selecione a acao e confirme para atualizar a interface localmente.</p>
+                  <p className="text-sm text-gray-400 mt-1">Selecione a ação e confirme para atualizar a interface localmente.</p>
                 </div>
                 <button onClick={closeModal} className="p-2 rounded-lg bg-voxx-block border border-voxx-line text-gray-400 hover:text-white transition-colors">
                   <X className="w-4 h-4" />
@@ -696,9 +696,9 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
               </div>
 
               <div className="bg-voxx-surface/70 border border-voxx-line rounded-xl p-4 mb-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Confirmacao</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Confirmação</p>
                 <p className="text-sm text-white">{selectedOption?.label}</p>
-                <p className="text-xs text-gray-400 mt-1">Ao confirmar, o dashboard sera atualizado para simular a operacao.</p>
+                <p className="text-xs text-gray-400 mt-1">Ao confirmar, o dashboard será atualizado para simular a operação.</p>
               </div>
 
               <div className="flex justify-end gap-3">
@@ -706,7 +706,7 @@ export function OperationalDashboard({ data = demoData }: { data?: DashboardData
                   Cancelar
                 </button>
                 <button onClick={executeAction} className="px-4 py-2 rounded-lg border border-voxx-cyan/50 bg-voxx-cyan/10 text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan transition-colors">
-                  Confirmar acao
+                  Confirmar ação
                 </button>
               </div>
             </motion.div>

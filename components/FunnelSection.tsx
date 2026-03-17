@@ -51,7 +51,7 @@ export function FunnelSection({ data = demoData }: { data?: DashboardData }) {
     <section id="funnel" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">
         <span className="w-8 h-[1px] bg-voxx-line" />
-        Funil de Conversao & Retencao
+        Funil de Conversão & Retenção
         <span className="flex-1 h-[1px] bg-voxx-line" />
       </h2>
 

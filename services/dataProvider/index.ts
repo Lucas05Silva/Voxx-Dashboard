@@ -71,7 +71,7 @@ function getTicketSLA(status: TicketStatus): string {
 
 function toPriorityLabel(priority: TicketPriority): string {
   if (priority === 'alta') return 'Alta';
-  if (priority === 'media') return 'Media';
+  if (priority === 'media') return 'Média';
   return 'Baixa';
 }
 
@@ -120,7 +120,7 @@ function mapToDashboardData(params: {
     client: clientsById.get(item.client_id)?.name ?? 'Cliente',
     priority: item.priority,
     status: item.status,
-    owner: item.status === 'aberto' ? 'Equipe NOC' : 'Equipe Tecnica',
+    owner: item.status === 'aberto' ? 'Equipe NOC' : 'Equipe Técnica',
     sla: getTicketSLA(item.status),
     actionLabel: item.status === 'aberto' ? 'Abrir atendimento' : 'Atualizar status',
   }));
@@ -132,7 +132,7 @@ function mapToDashboardData(params: {
     technician: `Equipe ${index + 1}`,
     status: item.status,
     scheduledDate: toBrDate(item.scheduled_date),
-    actionLabel: item.status === 'pendente' ? 'Reagendar instalacao' : 'Ver detalhes',
+    actionLabel: item.status === 'pendente' ? 'Reagendar instalação' : 'Ver detalhes',
   }));
 
   const revenueGrowth = 4.2;
@@ -143,7 +143,7 @@ function mapToDashboardData(params: {
     ...demoData,
     hero: {
       ...demoData.hero,
-      status: totalClients > 0 ? demoData.hero.status : 'Atencao',
+      status: totalClients > 0 ? demoData.hero.status : 'Atenção',
     },
     kpis: demoData.kpis.map((kpi) => {
       if (kpi.id === 'faturamento') {
@@ -220,7 +220,7 @@ function mapToDashboardData(params: {
         id: item.id,
         client: clientsById.get(item.client_id)?.name ?? `Cliente ${index + 1}`,
         status: toTitleCase(item.status),
-        type: 'Instalacao de plano',
+        type: 'Instalação de plano',
       })),
     },
     operational: {
@@ -362,4 +362,3 @@ export async function updateInstallation(
   const { error } = await supabase!.from('installations').update(payload).eq('id', installationId);
   if (error) throw error;
 }
-

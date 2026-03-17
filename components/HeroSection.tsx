@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
@@ -19,7 +19,7 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
     { id: 'kpi-flow', label: 'KPIs' },
     { id: 'ai-core', label: 'Insights IA' },
     { id: 'alerts', label: 'Alertas' },
-    { id: 'charts', label: 'Graficos' },
+    { id: 'charts', label: 'Gráficos' },
     { id: 'funnel', label: 'Funil' },
   ];
 
@@ -27,21 +27,20 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
     { id: 'ops-clients', label: 'Clientes' },
     { id: 'ops-finance', label: 'Financeiro' },
     { id: 'ops-tickets', label: 'Tickets' },
-    { id: 'ops-installations', label: 'Instalacoes' },
+    { id: 'ops-installations', label: 'Instalações' },
   ];
 
   const quickLinks = mode === 'executivo' ? executiveLinks : operationalLinks;
 
   return (
-    <motion.section 
+    <motion.section
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
       className="relative w-full rounded-2xl overflow-hidden glass-panel p-8 mb-8 border-glow-cyan"
     >
-      {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-voxx-cyan/10 blur-[120px] rounded-full pointer-events-none" />
-      
+
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -69,7 +68,7 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
 
           {mobileMenuOpen ? (
             <div className="md:hidden w-full glass-panel rounded-xl border border-voxx-line p-4 space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan">Acesso Rapido</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan">Acesso Rápido</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
@@ -106,18 +105,20 @@ export function HeroSection({ mode, setMode, data = demoData }: HeroSectionProps
           ) : null}
 
           <div className="flex items-center gap-4 bg-voxx-block/50 p-1.5 rounded-full border border-voxx-line backdrop-blur-md">
-            <button 
+            <button
               onClick={() => setMode('executivo')}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${mode === 'executivo' ? 'bg-voxx-cyan/10 text-voxx-cyan shadow-[0_0_15px_rgba(0,194,209,0.15)]' : 'text-gray-400 hover:text-white'}`}>
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${mode === 'executivo' ? 'bg-voxx-cyan/10 text-voxx-cyan shadow-[0_0_15px_rgba(0,194,209,0.15)]' : 'text-gray-400 hover:text-white'}`}
+            >
               Executivo
             </button>
-            <button 
+            <button
               onClick={() => setMode('operacional')}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${mode === 'operacional' ? 'bg-voxx-cyan/10 text-voxx-cyan shadow-[0_0_15px_rgba(0,194,209,0.15)]' : 'text-gray-400 hover:text-white'}`}>
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${mode === 'operacional' ? 'bg-voxx-cyan/10 text-voxx-cyan shadow-[0_0_15px_rgba(0,194,209,0.15)]' : 'text-gray-400 hover:text-white'}`}
+            >
               Operacional
             </button>
           </div>
-          
+
           <div className="hidden sm:flex items-center gap-6">
             <div className="text-right">
               <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Health Score</p>

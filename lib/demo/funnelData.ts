@@ -14,7 +14,7 @@ export const installationsSummary = {
 };
 
 export const operationalInstallations = [
-  { id: 'OS-901', client: 'Clinica Sao Rafael', status: 'Em Andamento', type: 'Nova Instalacao' },
-  { id: 'OS-902', client: 'Patricia Gomes', status: 'Pendente', type: 'Mudanca de Endereco' },
-  { id: 'OS-903', client: 'Auto Pecas Veloz', status: 'Concluida', type: 'Upgrade de Plano' },
+  { id: 'OS-901', client: 'Clínica São Rafael', status: 'Em Andamento', type: 'Nova Instalação' },
+  { id: 'OS-902', client: 'Patrícia Gomes', status: 'Pendente', type: 'Mudança de Endereço' },
+  { id: 'OS-903', client: 'Auto Peças Veloz', status: 'Concluída', type: 'Upgrade de Plano' },
 ];
