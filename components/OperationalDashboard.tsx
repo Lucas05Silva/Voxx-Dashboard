@@ -1,62 +1,96 @@
 ﻿'use client';
 
-import { Users, FileText, HeadphonesIcon, Wrench, ArrowUpRight, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Users, FileText, HeadphonesIcon, Wrench, ArrowUpRight } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
 import { formatCurrencyBRL, formatPercent } from '@/lib/demo/metrics';
 
-const clients = demoData.customers.operationalCustomers;
-const invoices = demoData.financial.operationalInvoices;
+const customers = demoData.operational.customersTable;
+const invoices = demoData.operational.invoiceList;
+const tickets = demoData.operational.ticketList;
+const installations = demoData.operational.installationList;
 
-const tickets = demoData.support.operationalTickets;
-const installations = demoData.installations.operationalInstallations;
+function customerStatusClass(status: string): string {
+  if (status === 'ativo') return 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+  if (status === 'inadimplente') return 'border-voxx-red/30 text-voxx-red bg-voxx-red/10';
+  if (status === 'suspenso') return 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10';
+  return 'border-gray-500/30 text-gray-300 bg-gray-500/10';
+}
+
+function invoiceStatusClass(status: string): string {
+  if (status === 'paga') return 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+  if (status === 'vencida' || status === 'atrasada') return 'border-voxx-red/30 text-voxx-red bg-voxx-red/10';
+  return 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10';
+}
+
+function ticketPriorityClass(priority: string): string {
+  if (priority === 'alta') return 'border-voxx-red/30 text-voxx-red bg-voxx-red/10';
+  if (priority === 'media') return 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10';
+  return 'border-voxx-cyan/30 text-voxx-cyan bg-voxx-cyan/10';
+}
+
+function installationStatusClass(status: string): string {
+  if (status === 'concluida') return 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+  if (status === 'em andamento') return 'border-voxx-cyan/30 text-voxx-cyan bg-voxx-cyan/10';
+  if (status === 'reagendada') return 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10';
+  return 'border-gray-500/30 text-gray-300 bg-gray-500/10';
+}
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function ActionButton({ label }: { label: string }) {
+  return (
+    <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-voxx-block border border-voxx-line text-[10px] font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:border-voxx-cyan/40 transition-colors">
+      {label}
+      <ArrowUpRight className="w-3 h-3" />
+    </button>
+  );
+}
 
 export function OperationalDashboard() {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+    <div className="space-y-8">
       <section className="glass-panel p-6 rounded-2xl border-voxx-line relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-cyan/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
               <Users className="w-4 h-4 text-voxx-cyan" />
-              Gestao de Clientes
+              Tabela de Clientes
             </h2>
-            <button className="text-[10px] font-bold text-voxx-cyan uppercase tracking-widest hover:text-white transition-colors">Ver Todos</button>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(demoData.checks.delinquencyCheck)}</span></span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[500px]">
+            <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
-                  <th className="pb-3 font-bold">Cliente</th>
+                  <th className="pb-3 font-bold">Nome</th>
+                  <th className="pb-3 font-bold">Codigo</th>
                   <th className="pb-3 font-bold">Plano</th>
                   <th className="pb-3 font-bold">Status</th>
-                  <th className="pb-3 font-bold">Valor</th>
+                  <th className="pb-3 font-bold">Cidade</th>
+                  <th className="pb-3 font-bold">Valor mensal</th>
+                  <th className="pb-3 font-bold">Vencimento</th>
                   <th className="pb-3 font-bold text-right">Acao</th>
                 </tr>
               </thead>
               <tbody>
-                {clients.map((client) => (
-                  <tr key={client.id} className="border-b border-voxx-line/30 hover:bg-voxx-surface/50 transition-colors group/row">
-                    <td className="py-4 text-sm font-bold text-white">{client.name}</td>
-                    <td className="py-4 text-xs text-gray-400">Fibra {client.plan}</td>
+                {customers.map((customer) => (
+                  <tr key={customer.id} className="border-b border-voxx-line/30 hover:bg-voxx-surface/50 transition-colors">
+                    <td className="py-4 text-sm font-bold text-white">{customer.name}</td>
+                    <td className="py-4 text-xs font-mono text-gray-400">{customer.code}</td>
+                    <td className="py-4 text-xs text-gray-300">Fibra {customer.plan}</td>
                     <td className="py-4">
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${
-                          client.status === 'Ativo'
-                            ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10'
-                            : client.status === 'Bloqueado'
-                              ? 'border-voxx-red/30 text-voxx-red bg-voxx-red/10'
-                              : 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10'
-                        }`}
-                      >
-                        {client.status}
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${customerStatusClass(customer.status)}`}>
+                        {customer.status}
                       </span>
                     </td>
-                    <td className="py-4 text-sm font-mono text-gray-300">{formatCurrencyBRL(client.value)}</td>
+                    <td className="py-4 text-xs text-gray-300">{customer.city}</td>
+                    <td className="py-4 text-sm font-mono text-gray-200">{formatCurrencyBRL(customer.monthlyValue)}</td>
+                    <td className="py-4 text-xs text-gray-300">{customer.dueDate}</td>
                     <td className="py-4 text-right">
-                      <button className="p-2 rounded-lg bg-voxx-block border border-voxx-line text-gray-400 hover:text-voxx-cyan hover:border-voxx-cyan/50 transition-all opacity-50 group-hover/row:opacity-100">
-                        <ArrowUpRight className="w-4 h-4" />
-                      </button>
+                      <ActionButton label={customer.actionLabel} />
                     </td>
                   </tr>
                 ))}
@@ -72,28 +106,42 @@ export function OperationalDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
               <FileText className="w-4 h-4 text-voxx-blue" />
-              Controle Financeiro
+              Lista Financeira
             </h2>
-            <button className="text-[10px] font-bold text-voxx-blue uppercase tracking-widest hover:text-white transition-colors">Ver Faturas</button>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Contas em atraso: <span className="text-voxx-red">{demoData.financial.overdueAccounts}</span></span>
           </div>
-          <div className="space-y-4">
-            {invoices.map((invoice) => (
-              <div key={invoice.id} className="flex items-center justify-between p-4 rounded-xl bg-voxx-surface border border-voxx-line hover:border-voxx-blue/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_5px_15px_rgba(0,0,0,0.3)]">
-                <div className="flex items-center gap-4">
-                  <div className={`w-2 h-2 rounded-full ${invoice.status === 'Paga' ? 'bg-emerald-400 glow-cyan' : invoice.status === 'Atrasada' ? 'bg-voxx-red glow-red' : 'bg-yellow-400'}`} />
-                  <div>
-                    <p className="text-sm font-bold text-white mb-1">{invoice.client}</p>
-                    <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{invoice.id} • {invoice.date}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-white">{formatCurrencyBRL(invoice.value)}</p>
-                  <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${invoice.status === 'Paga' ? 'text-emerald-400' : invoice.status === 'Atrasada' ? 'text-voxx-red' : 'text-yellow-400'}`}>{invoice.status}</p>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[900px]">
+              <thead>
+                <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
+                  <th className="pb-3 font-bold">Cliente</th>
+                  <th className="pb-3 font-bold">Fatura</th>
+                  <th className="pb-3 font-bold">Valor</th>
+                  <th className="pb-3 font-bold">Vencimento</th>
+                  <th className="pb-3 font-bold">Status</th>
+                  <th className="pb-3 font-bold text-right">Acao</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-b border-voxx-line/30 hover:bg-voxx-surface/50 transition-colors">
+                    <td className="py-4 text-sm font-bold text-white">{invoice.client}</td>
+                    <td className="py-4 text-xs font-mono text-gray-400">{invoice.invoice}</td>
+                    <td className="py-4 text-sm font-mono text-gray-200">{formatCurrencyBRL(invoice.value)}</td>
+                    <td className="py-4 text-xs text-gray-300">{invoice.dueDate}</td>
+                    <td className="py-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${invoiceStatusClass(invoice.status)}`}>
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <ActionButton label={invoice.actionLabel} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="mt-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(demoData.checks.delinquencyCheck)}</span></div>
         </div>
       </section>
 
@@ -103,45 +151,43 @@ export function OperationalDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
               <HeadphonesIcon className="w-4 h-4 text-voxx-red" />
-              Fila de Suporte
+              Lista de Tickets
             </h2>
-            <button className="text-[10px] font-bold text-voxx-red uppercase tracking-widest hover:text-white transition-colors">Painel de Tickets</button>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Abertos: <span className="text-voxx-red">{demoData.support.openTickets}</span></span>
           </div>
-          <div className="space-y-4">
-            {tickets.map((ticket) => (
-              <div key={ticket.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-voxx-surface border border-voxx-line hover:border-voxx-red/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_5px_15px_rgba(0,0,0,0.3)] gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${
-                        ticket.priority === 'Alta'
-                          ? 'border-voxx-red/50 text-voxx-red bg-voxx-red/10'
-                          : ticket.priority.includes('M')
-                            ? 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10'
-                            : 'border-voxx-cyan/50 text-voxx-cyan bg-voxx-cyan/10'
-                      }`}
-                    >
-                      {ticket.priority}
-                    </span>
-                    <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{ticket.id}</span>
-                  </div>
-                  <p className="text-sm font-bold text-white">{ticket.subject}</p>
-                </div>
-                <div className="flex items-center gap-6 sm:justify-end">
-                  <div className="text-left sm:text-right">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Status</p>
-                    <p className="text-xs font-bold text-gray-300">{ticket.status}</p>
-                  </div>
-                  <div className="text-left sm:text-right">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Espera</p>
-                    <p className="text-xs font-mono font-bold text-voxx-cyan">{ticket.time}</p>
-                  </div>
-                  <button className="p-2 rounded-lg bg-voxx-block border border-voxx-line text-gray-400 hover:text-white hover:bg-voxx-red/20 transition-all">
-                    <ArrowUpRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[980px]">
+              <thead>
+                <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
+                  <th className="pb-3 font-bold">Protocolo</th>
+                  <th className="pb-3 font-bold">Cliente</th>
+                  <th className="pb-3 font-bold">Prioridade</th>
+                  <th className="pb-3 font-bold">Status</th>
+                  <th className="pb-3 font-bold">Responsavel</th>
+                  <th className="pb-3 font-bold">SLA</th>
+                  <th className="pb-3 font-bold text-right">Acao</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.map((ticket) => (
+                  <tr key={ticket.id} className="border-b border-voxx-line/30 hover:bg-voxx-surface/50 transition-colors">
+                    <td className="py-4 text-xs font-mono text-gray-300">{ticket.protocol}</td>
+                    <td className="py-4 text-sm font-bold text-white">{ticket.client}</td>
+                    <td className="py-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${ticketPriorityClass(ticket.priority)}`}>
+                        {ticket.priority}
+                      </span>
+                    </td>
+                    <td className="py-4 text-xs text-gray-300">{capitalize(ticket.status)}</td>
+                    <td className="py-4 text-xs text-gray-300">{ticket.owner}</td>
+                    <td className="py-4 text-xs font-mono text-voxx-cyan">{ticket.sla}</td>
+                    <td className="py-4 text-right">
+                      <ActionButton label={ticket.actionLabel} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -152,44 +198,41 @@ export function OperationalDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
               <Wrench className="w-4 h-4 text-emerald-400" />
-              Ordens de Servico
+              Lista de Instalacoes
             </h2>
-            <button className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest hover:text-white transition-colors">Mapa de OS</button>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pendentes: <span className="text-yellow-400">{demoData.installations.pending}</span></span>
           </div>
-          <div className="grid gap-4">
-            {installations.map((os) => (
-              <div key={os.id} className="flex items-center justify-between p-4 rounded-xl bg-voxx-surface border border-voxx-line hover:border-emerald-500/30 transition-all hover:-translate-y-0.5 hover:shadow-[0_5px_15px_rgba(0,0,0,0.3)]">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1">
-                    {os.status.includes('Conclu') ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    ) : os.status.includes('Andamento') ? (
-                      <Clock className="w-5 h-5 text-voxx-cyan" />
-                    ) : (
-                      <AlertCircle className="w-5 h-5 text-yellow-400" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-white mb-1">{os.client}</p>
-                    <p className="text-xs text-gray-400">{os.type}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span
-                    className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${
-                      os.status.includes('Conclu')
-                        ? 'border-emerald-500/30 text-emerald-400'
-                        : os.status.includes('Andamento')
-                          ? 'border-voxx-cyan/30 text-voxx-cyan'
-                          : 'border-yellow-500/30 text-yellow-400'
-                    }`}
-                  >
-                    {os.status}
-                  </span>
-                  <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-2">{os.id}</p>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[980px]">
+              <thead>
+                <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
+                  <th className="pb-3 font-bold">Cliente</th>
+                  <th className="pb-3 font-bold">Plano</th>
+                  <th className="pb-3 font-bold">Tecnico</th>
+                  <th className="pb-3 font-bold">Status</th>
+                  <th className="pb-3 font-bold">Data agendada</th>
+                  <th className="pb-3 font-bold text-right">Acao</th>
+                </tr>
+              </thead>
+              <tbody>
+                {installations.map((installation) => (
+                  <tr key={installation.id} className="border-b border-voxx-line/30 hover:bg-voxx-surface/50 transition-colors">
+                    <td className="py-4 text-sm font-bold text-white">{installation.client}</td>
+                    <td className="py-4 text-xs text-gray-300">Fibra {installation.plan}</td>
+                    <td className="py-4 text-xs text-gray-300">{installation.technician}</td>
+                    <td className="py-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${installationStatusClass(installation.status)}`}>
+                        {installation.status}
+                      </span>
+                    </td>
+                    <td className="py-4 text-xs text-gray-300">{installation.scheduledDate}</td>
+                    <td className="py-4 text-right">
+                      <ActionButton label={installation.actionLabel} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>

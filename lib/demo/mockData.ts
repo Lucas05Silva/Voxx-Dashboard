@@ -138,6 +138,33 @@ export const demoData = {
     ...installationsSummary,
     operationalInstallations,
   },
+  operational: {
+    customersTable: [
+      { id: 'C-10231', name: 'Construtora Aurora', code: 'VX-1001', plan: '700MB', status: 'ativo', city: 'Campinas', monthlyValue: 599, dueDate: '20/03/2026', actionLabel: 'Ver detalhes' },
+      { id: 'C-08412', name: 'Mercado Boa Compra', code: 'VX-1002', plan: '500MB', status: 'inadimplente', city: 'Valinhos', monthlyValue: 289, dueDate: '14/03/2026', actionLabel: 'Cobrar cliente' },
+      { id: 'C-11905', name: 'Juliana Ribeiro', code: 'VX-1003', plan: '300MB', status: 'ativo', city: 'Hortolandia', monthlyValue: 79.9, dueDate: '25/03/2026', actionLabel: 'Ver detalhes' },
+      { id: 'C-09147', name: 'Rafael Nunes', code: 'VX-1004', plan: '100MB', status: 'suspenso', city: 'Sumare', monthlyValue: 69.9, dueDate: '08/03/2026', actionLabel: 'Atualizar status' },
+      { id: 'C-07320', name: 'Loja Click Center', code: 'VX-1005', plan: '1GB', status: 'cancelado', city: 'Campinas', monthlyValue: 399, dueDate: '10/03/2026', actionLabel: 'Abrir atendimento' },
+    ],
+    invoiceList: [
+      { id: 'INV-2101', client: 'Construtora Aurora', invoice: 'FAT-93210', value: 599, dueDate: '12/03/2026', status: 'paga', actionLabel: 'Ver detalhes' },
+      { id: 'INV-2102', client: 'Mercado Boa Compra', invoice: 'FAT-93244', value: 289, dueDate: '14/03/2026', status: 'vencida', actionLabel: 'Cobrar cliente' },
+      { id: 'INV-2103', client: 'Rafael Nunes', invoice: 'FAT-93279', value: 69.9, dueDate: '08/03/2026', status: 'atrasada', actionLabel: 'Renegociar' },
+      { id: 'INV-2104', client: 'Juliana Ribeiro', invoice: 'FAT-93301', value: 79.9, dueDate: '25/03/2026', status: 'pendente', actionLabel: 'Enviar lembrete' },
+    ],
+    ticketList: [
+      { id: 'TK-2142', protocol: '2026-0002142', client: 'Mercado Boa Compra', priority: 'alta', status: 'aberto', owner: 'Equipe NOC', sla: '00:38', actionLabel: 'Abrir atendimento' },
+      { id: 'TK-2143', protocol: '2026-0002143', client: 'Clinica Sao Rafael', priority: 'media', status: 'em atendimento', owner: 'Lucas M.', sla: '01:22', actionLabel: 'Atualizar status' },
+      { id: 'TK-2144', protocol: '2026-0002144', client: 'Juliana Ribeiro', priority: 'baixa', status: 'resolvido', owner: 'Ana P.', sla: '00:12', actionLabel: 'Ver detalhes' },
+      { id: 'TK-2145', protocol: '2026-0002145', client: 'Auto Pecas Veloz', priority: 'alta', status: 'aberto', owner: 'Equipe Campo 2', sla: '00:55', actionLabel: 'Escalar ticket' },
+    ],
+    installationList: [
+      { id: 'OS-901', client: 'Clinica Sao Rafael', plan: '700MB', technician: 'Andre S.', status: 'em andamento', scheduledDate: '17/03/2026', actionLabel: 'Atualizar status' },
+      { id: 'OS-902', client: 'Patricia Gomes', plan: '300MB', technician: 'Equipe 5', status: 'pendente', scheduledDate: '18/03/2026', actionLabel: 'Reagendar instalacao' },
+      { id: 'OS-903', client: 'Auto Pecas Veloz', plan: '1GB', technician: 'Carlos T.', status: 'concluida', scheduledDate: '16/03/2026', actionLabel: 'Ver detalhes' },
+      { id: 'OS-904', client: 'Condominio Vista Azul', plan: '500MB', technician: 'Equipe 3', status: 'reagendada', scheduledDate: '19/03/2026', actionLabel: 'Confirmar agenda' },
+    ],
+  },
   funnel: {
     steps: funnelData,
   },
