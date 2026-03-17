@@ -53,15 +53,15 @@ export function AiCore({ data = demoData }: { data?: DashboardData }) {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className={`flex flex-col sm:flex-row gap-6 items-start sm:items-center p-6 rounded-2xl border ${insight.border} ${insight.bg} backdrop-blur-md transition-all hover:bg-opacity-20 hover:scale-[1.01]`}
+                  className="group relative flex flex-col sm:flex-row gap-6 items-start sm:items-center p-6 rounded-2xl border border-voxx-line/70 bg-gradient-to-br from-voxx-surface/80 via-voxx-block/85 to-voxx-bg/90 backdrop-blur-md shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:border-voxx-cyan/35 hover:shadow-[0_14px_34px_rgba(0,0,0,0.35),0_0_26px_rgba(0,194,209,0.08)]"
                 >
-                  <div className={`p-4 rounded-xl bg-voxx-surface border border-voxx-line ${insight.color} shadow-[0_0_20px_rgba(0,0,0,0.5)]`}>
+                  <div className={`p-4 rounded-xl bg-gradient-to-br from-voxx-surface to-voxx-block border border-voxx-line/70 ${insight.color} shadow-[0_0_16px_rgba(0,0,0,0.45)]`}>
                     <InsightIcon className="w-6 h-6" />
                   </div>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${insight.border} ${insight.color}`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border border-voxx-line/80 bg-voxx-surface/70 ${insight.color}`}>
                         Prioridade {priorityLabel(insight.priority)}
                       </span>
                       <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Insight Automatico</span>
@@ -73,7 +73,7 @@ export function AiCore({ data = demoData }: { data?: DashboardData }) {
                   <div className="sm:text-right w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-voxx-line">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Impacto Projetado</p>
                     <p className={`text-xl font-bold tracking-tight ${insight.color}`}>{insight.impact}</p>
-                    <button className="mt-3 w-full sm:w-auto px-4 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-xs font-bold text-white hover:bg-voxx-block transition-colors uppercase tracking-wider">
+                    <button className="mt-3 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-voxx-surface to-voxx-block border border-voxx-cyan/35 text-xs font-bold text-white uppercase tracking-wider shadow-[0_6px_16px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:border-voxx-cyan/60 hover:shadow-[0_10px_22px_rgba(0,194,209,0.18)] active:translate-y-0">
                       Executar Acao
                     </button>
                   </div>
