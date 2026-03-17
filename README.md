@@ -1,20 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Voxx Dashboard
 
-# Run and deploy your AI Studio app
+Projeto Next.js pronto para deploy na Vercel.
 
-This contains everything you need to run your app locally.
+## Rodar localmente
 
-View your app in AI Studio: https://ai.studio/apps/78b47262-6142-4b66-ae26-a456ed24da77
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
+1. Instale as dependencias:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Rode em desenvolvimento:
    `npm run dev`
+3. Gere build de producao:
+   `npm run build`
+
+## Deploy na Vercel
+
+1. Importe este repositorio na Vercel.
+2. Framework preset: `Next.js` (detectado automaticamente).
+3. Build command: `npm run build`.
+4. Output directory: padrao da Vercel para Next.js (nao preencher).
+5. Deploy.
+
+## Variaveis de ambiente
+
+No estado atual do projeto, nao ha variaveis obrigatorias para build/deploy.

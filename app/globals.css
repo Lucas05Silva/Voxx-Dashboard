@@ -9,6 +9,7 @@
   --color-voxx-surface: #0B1620;
   --color-voxx-block: #0E1C27;
   --color-voxx-line: rgba(255, 255, 255, 0.06);
+  --font-sora: "Segoe UI", "Avenir Next", "Trebuchet MS", sans-serif;
   --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
 }
 
