@@ -18,7 +18,7 @@ function priorityLabel(value: string): string {
 
 export function AiCore() {
   return (
-    <section className="mb-12">
+    <section id="ai-core" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">
         <span className="w-8 h-[1px] bg-voxx-line" />
         Neural Insight Core
@@ -27,19 +27,19 @@ export function AiCore() {
 
       <div className="relative w-full rounded-3xl overflow-hidden glass-panel p-1 border-glow-cyan">
         <div className="absolute inset-0 bg-gradient-to-br from-voxx-block via-voxx-surface to-voxx-bg opacity-90" />
-        <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(0,194,209,0.05)] pointer-events-none" />
+        <div className="absolute inset-0 shadow-[inset_0_0_70px_rgba(0,194,209,0.04)] md:shadow-[inset_0_0_100px_rgba(0,194,209,0.05)] pointer-events-none" />
 
-        <div className="relative z-10 p-8 lg:p-12 flex flex-col lg:flex-row gap-12 items-center">
+        <div className="relative z-10 p-5 md:p-7 lg:p-12 flex flex-col lg:flex-row gap-7 md:gap-9 lg:gap-12 items-center">
           <div className="w-full lg:w-1/3 flex flex-col items-center justify-center relative">
-            <div className="absolute w-[300px] h-[300px] bg-voxx-cyan/20 blur-[100px] rounded-full animate-pulse" />
-            <div className="relative w-48 h-48 rounded-full border border-voxx-cyan/30 flex items-center justify-center bg-voxx-surface/50 backdrop-blur-xl shadow-[0_0_50px_rgba(0,194,209,0.2)]">
-              <div className="absolute inset-2 rounded-full border border-dashed border-voxx-cyan/40 animate-[spin_20s_linear_infinite]" />
-              <div className="absolute inset-6 rounded-full border border-voxx-blue/50 animate-[spin_15s_linear_infinite_reverse]" />
-              <BrainCircuit className="w-16 h-16 text-voxx-cyan animate-pulse" />
+            <div className="absolute w-[220px] h-[220px] md:w-[300px] md:h-[300px] bg-voxx-cyan/15 md:bg-voxx-cyan/20 blur-[80px] md:blur-[100px] rounded-full animate-pulse" />
+            <div className="relative w-36 h-36 md:w-48 md:h-48 rounded-full border border-voxx-cyan/30 flex items-center justify-center bg-voxx-surface/50 backdrop-blur-xl shadow-[0_0_30px_rgba(0,194,209,0.16)] md:shadow-[0_0_50px_rgba(0,194,209,0.2)]">
+              <div className="absolute inset-2 rounded-full border border-dashed border-voxx-cyan/40 hidden md:block animate-[spin_20s_linear_infinite]" />
+              <div className="absolute inset-6 rounded-full border border-voxx-blue/50 hidden md:block animate-[spin_15s_linear_infinite_reverse]" />
+              <BrainCircuit className="w-12 h-12 md:w-16 md:h-16 text-voxx-cyan animate-pulse" />
             </div>
-            <div className="mt-8 text-center">
-              <h3 className="text-2xl font-bold text-white tracking-tight mb-2">Motor Preditivo Ativo</h3>
-              <p className="text-sm font-medium text-voxx-cyan uppercase tracking-widest">Analisando {demoData.customers.active.toLocaleString('pt-BR')} contratos ativos</p>
+            <div className="mt-5 md:mt-8 text-center">
+              <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2">Motor Preditivo Ativo</h3>
+              <p className="text-xs md:text-sm font-medium text-voxx-cyan uppercase tracking-wider md:tracking-widest">Analisando {demoData.customers.active.toLocaleString('pt-BR')} contratos ativos</p>
             </div>
           </div>
 

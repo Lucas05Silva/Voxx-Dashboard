@@ -12,7 +12,7 @@ const iconByType = {
 
 export function AlertsSection() {
   return (
-    <section className="mb-12">
+    <section id="alerts" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-4">
           <span className="w-8 h-[1px] bg-voxx-line" />
@@ -23,7 +23,7 @@ export function AlertsSection() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         {demoData.alerts.map((alert, index) => {
           const AlertIcon = iconByType[alert.type as keyof typeof iconByType];
           return (

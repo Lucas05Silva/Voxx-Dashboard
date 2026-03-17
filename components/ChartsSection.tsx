@@ -12,34 +12,34 @@ const projectedPoint = demoData.financial.projections[demoData.financial.project
 
 export function ChartsSection() {
   return (
-    <section className="mb-12">
+    <section id="charts" className="mb-8 md:mb-10 lg:mb-12 scroll-mt-24">
       <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6 flex items-center gap-4">
         <span className="w-8 h-[1px] bg-voxx-line" />
         Projecao Financeira & Retencao
         <span className="flex-1 h-[1px] bg-voxx-line" />
       </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="glass-panel p-6 rounded-2xl border-glow-cyan relative overflow-hidden"
+          className="glass-panel p-4 md:p-6 rounded-2xl border-glow-cyan relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-cyan/5 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-40 h-40 md:w-64 md:h-64 bg-voxx-cyan/5 blur-[60px] md:blur-[80px] rounded-full pointer-events-none" />
 
           <div className="flex justify-between items-end mb-8 relative z-10">
             <div>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Receita Recorrente (MRR)</p>
-              <h3 className="text-3xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueCurrent, true)} <span className="text-sm font-bold text-voxx-cyan">Atual</span></h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueCurrent, true)} <span className="text-xs md:text-sm font-bold text-voxx-cyan">Atual</span></h3>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-bold text-voxx-cyan uppercase tracking-widest mb-1">Projecao IA ({projectedPoint.name})</p>
-              <p className="text-xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueProjection, true)}</p>
+              <p className="text-lg md:text-xl font-bold text-white tracking-tight">{formatCurrencyBRL(demoData.financial.revenueProjection, true)}</p>
             </div>
           </div>
 
-          <div className="h-[250px] w-full relative z-10">
+          <div className="h-[190px] md:h-[250px] w-full relative z-10">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -77,22 +77,22 @@ export function ChartsSection() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="glass-panel p-6 rounded-2xl border-glow-red relative overflow-hidden"
+          className="glass-panel p-4 md:p-6 rounded-2xl border-glow-red relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-red/5 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-40 h-40 md:w-64 md:h-64 bg-voxx-red/5 blur-[60px] md:blur-[80px] rounded-full pointer-events-none" />
 
           <div className="flex justify-between items-end mb-8 relative z-10">
             <div>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Taxa de Churn</p>
-              <h3 className="text-3xl font-bold text-white tracking-tight">{currentPoint.churn.toFixed(1)}% <span className="text-sm font-bold text-voxx-red">Atual</span></h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{currentPoint.churn.toFixed(1)}% <span className="text-xs md:text-sm font-bold text-voxx-red">Atual</span></h3>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-bold text-voxx-red uppercase tracking-widest mb-1">Projecao IA ({projectedPoint.name})</p>
-              <p className="text-xl font-bold text-white tracking-tight">{projectedPoint.churn.toFixed(1)}%</p>
+              <p className="text-lg md:text-xl font-bold text-white tracking-tight">{projectedPoint.churn.toFixed(1)}%</p>
             </div>
           </div>
 
-          <div className="h-[250px] w-full relative z-10">
+          <div className="h-[190px] md:h-[250px] w-full relative z-10">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>

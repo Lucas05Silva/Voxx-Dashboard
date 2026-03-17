@@ -14,7 +14,7 @@ export default function Home() {
   const [mode, setMode] = useState<'executivo' | 'operacional'>('executivo');
 
   return (
-    <main className="min-h-screen bg-voxx-bg text-white p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto">
+    <main className="min-h-screen bg-voxx-bg text-white px-3 py-4 sm:px-4 sm:py-5 md:px-7 md:py-7 lg:p-12 max-w-[1600px] mx-auto">
       <HeroSection mode={mode} setMode={setMode} />
       
       <AnimatePresence mode="wait">

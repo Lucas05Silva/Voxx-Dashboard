@@ -147,6 +147,7 @@ export function OperationalDashboard() {
   const [invoices, setInvoices] = useState<InvoiceRow[]>(demoData.operational.invoiceList);
   const [tickets, setTickets] = useState<TicketRow[]>(demoData.operational.ticketList);
   const [installations, setInstallations] = useState<InstallationRow[]>(demoData.operational.installationList);
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [modal, setModal] = useState<ActionModalState | null>(null);
   const [lastReportAt, setLastReportAt] = useState<string | null>(null);
@@ -163,6 +164,13 @@ export function OperationalDashboard() {
   const selectedOption = selectedOptions.find((option) => option.key === modal?.selected);
 
   const closeModal = () => setModal(null);
+
+  const toggleCard = (id: string) => {
+    setExpandedCards((current) => ({
+      ...current,
+      [id]: !current[id],
+    }));
+  };
 
   const showFeedback = (message: string, variant: 'success' | 'info' = 'success') => {
     setFeedback({ message, variant });
@@ -310,7 +318,7 @@ export function OperationalDashboard() {
       <div className="flex justify-end">
         <button
           onClick={() => setModal({ context: 'report', rowId: 'report', selected: 'gerar_relatorio' })}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan/50 transition-colors"
+          className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-4 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-xs font-bold uppercase tracking-widest text-voxx-cyan hover:text-white hover:border-voxx-cyan/50 transition-colors"
         >
           <Download className="w-4 h-4" />
           Gerar relatorio
@@ -321,8 +329,8 @@ export function OperationalDashboard() {
         <div className="text-right text-[10px] font-bold uppercase tracking-widest text-gray-500">Ultimo relatorio gerado as <span className="text-voxx-cyan">{lastReportAt}</span></div>
       ) : null}
 
-      <section className="glass-panel p-6 rounded-2xl border-voxx-line relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-cyan/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
+      <section id="ops-clients" className="glass-panel p-4 md:p-6 rounded-2xl border-voxx-line relative overflow-hidden group scroll-mt-24">
+        <div className="hidden md:block absolute top-0 right-0 w-64 h-64 bg-voxx-cyan/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
@@ -331,7 +339,7 @@ export function OperationalDashboard() {
             </h2>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Inadimplencia atual: <span className="text-voxx-red">{formatPercent(demoData.checks.delinquencyCheck)}</span></span>
           </div>
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
@@ -367,11 +375,42 @@ export function OperationalDashboard() {
               </tbody>
             </table>
           </div>
+
+          <div className="md:hidden space-y-3">
+            {customers.map((customer) => (
+              <div key={customer.id} className="rounded-xl border border-voxx-line bg-voxx-surface/60 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-white">{customer.name}</p>
+                    <p className="text-[10px] font-mono text-gray-400 mt-1">{customer.code} • Fibra {customer.plan}</p>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${customerStatusClass(customer.status)}`}>
+                    {customer.status}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-xs text-gray-300">{formatCurrencyBRL(customer.monthlyValue)} • {customer.dueDate}</p>
+                  <button onClick={() => toggleCard(`customer-${customer.id}`)} className="text-[10px] font-bold uppercase tracking-widest text-voxx-cyan">
+                    {expandedCards[`customer-${customer.id}`] ? 'Ver menos' : 'Ver mais'}
+                  </button>
+                </div>
+                {expandedCards[`customer-${customer.id}`] ? (
+                  <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
+                    <p className="text-xs text-gray-400">Cidade: <span className="text-gray-200">{customer.city}</span></p>
+                    <p className="text-xs text-gray-400">Vencimento: <span className="text-gray-200">{customer.dueDate}</span></p>
+                  </div>
+                ) : null}
+                <div className="mt-3">
+                  <ActionButton label={customer.actionLabel} onClick={() => openCustomerActions(customer)} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="glass-panel p-6 rounded-2xl border-voxx-line relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-blue/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
+      <section id="ops-finance" className="glass-panel p-4 md:p-6 rounded-2xl border-voxx-line relative overflow-hidden group scroll-mt-24">
+        <div className="hidden md:block absolute top-0 right-0 w-64 h-64 bg-voxx-blue/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
@@ -380,7 +419,7 @@ export function OperationalDashboard() {
             </h2>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Contas em atraso: <span className="text-voxx-red">{demoData.financial.overdueAccounts}</span></span>
           </div>
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
@@ -412,11 +451,42 @@ export function OperationalDashboard() {
               </tbody>
             </table>
           </div>
+
+          <div className="md:hidden space-y-3">
+            {invoices.map((invoice) => (
+              <div key={invoice.id} className="rounded-xl border border-voxx-line bg-voxx-surface/60 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-white">{invoice.client}</p>
+                    <p className="text-[10px] font-mono text-gray-400 mt-1">{invoice.invoice}</p>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${invoiceStatusClass(invoice.status)}`}>
+                    {invoice.status}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-xs text-gray-300">{formatCurrencyBRL(invoice.value)}</p>
+                  <button onClick={() => toggleCard(`invoice-${invoice.id}`)} className="text-[10px] font-bold uppercase tracking-widest text-voxx-cyan">
+                    {expandedCards[`invoice-${invoice.id}`] ? 'Ver menos' : 'Ver mais'}
+                  </button>
+                </div>
+                {expandedCards[`invoice-${invoice.id}`] ? (
+                  <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
+                    <p className="text-xs text-gray-400">Vencimento: <span className="text-gray-200">{invoice.dueDate}</span></p>
+                    <p className="text-xs text-gray-400">Status financeiro: <span className="text-gray-200">{invoice.status}</span></p>
+                  </div>
+                ) : null}
+                <div className="mt-3">
+                  <ActionButton label={invoice.actionLabel} onClick={() => openInvoiceActions(invoice)} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="glass-panel p-6 rounded-2xl border-voxx-line relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-voxx-red/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
+      <section id="ops-tickets" className="glass-panel p-4 md:p-6 rounded-2xl border-voxx-line relative overflow-hidden group scroll-mt-24">
+        <div className="hidden md:block absolute top-0 right-0 w-64 h-64 bg-voxx-red/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
@@ -425,7 +495,7 @@ export function OperationalDashboard() {
             </h2>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Abertos: <span className="text-voxx-red">{tickets.filter((ticket) => ticket.status === 'aberto').length}</span></span>
           </div>
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
@@ -459,11 +529,42 @@ export function OperationalDashboard() {
               </tbody>
             </table>
           </div>
+
+          <div className="md:hidden space-y-3">
+            {tickets.map((ticket) => (
+              <div key={ticket.id} className="rounded-xl border border-voxx-line bg-voxx-surface/60 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-white">{ticket.client}</p>
+                    <p className="text-[10px] font-mono text-gray-400 mt-1">{ticket.protocol}</p>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${ticketPriorityClass(ticket.priority)}`}>
+                    {ticket.priority}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-xs text-gray-300">{capitalize(ticket.status)} • SLA {ticket.sla}</p>
+                  <button onClick={() => toggleCard(`ticket-${ticket.id}`)} className="text-[10px] font-bold uppercase tracking-widest text-voxx-cyan">
+                    {expandedCards[`ticket-${ticket.id}`] ? 'Ver menos' : 'Ver mais'}
+                  </button>
+                </div>
+                {expandedCards[`ticket-${ticket.id}`] ? (
+                  <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
+                    <p className="text-xs text-gray-400">Responsavel: <span className="text-gray-200">{ticket.owner}</span></p>
+                    <p className="text-xs text-gray-400">Status atual: <span className="text-gray-200">{capitalize(ticket.status)}</span></p>
+                  </div>
+                ) : null}
+                <div className="mt-3">
+                  <ActionButton label={ticket.actionLabel} onClick={() => openTicketActions(ticket)} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="glass-panel p-6 rounded-2xl border-voxx-line relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
+      <section id="ops-installations" className="glass-panel p-4 md:p-6 rounded-2xl border-voxx-line relative overflow-hidden group scroll-mt-24">
+        <div className="hidden md:block absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-3">
@@ -472,7 +573,7 @@ export function OperationalDashboard() {
             </h2>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pendentes: <span className="text-yellow-400">{installations.filter((item) => item.status === 'pendente').length}</span></span>
           </div>
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
                 <tr className="border-b border-voxx-line/50 text-[10px] uppercase tracking-widest text-gray-500">
@@ -503,6 +604,37 @@ export function OperationalDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="md:hidden space-y-3">
+            {installations.map((installation) => (
+              <div key={installation.id} className="rounded-xl border border-voxx-line bg-voxx-surface/60 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-white">{installation.client}</p>
+                    <p className="text-[10px] font-mono text-gray-400 mt-1">Fibra {installation.plan}</p>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border ${installationStatusClass(installation.status)}`}>
+                    {installation.status}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-xs text-gray-300">{installation.scheduledDate}</p>
+                  <button onClick={() => toggleCard(`installation-${installation.id}`)} className="text-[10px] font-bold uppercase tracking-widest text-voxx-cyan">
+                    {expandedCards[`installation-${installation.id}`] ? 'Ver menos' : 'Ver mais'}
+                  </button>
+                </div>
+                {expandedCards[`installation-${installation.id}`] ? (
+                  <div className="mt-3 pt-3 border-t border-voxx-line space-y-1">
+                    <p className="text-xs text-gray-400">Tecnico: <span className="text-gray-200">{installation.technician}</span></p>
+                    <p className="text-xs text-gray-400">Status: <span className="text-gray-200">{installation.status}</span></p>
+                  </div>
+                ) : null}
+                <div className="mt-3">
+                  <ActionButton label={installation.actionLabel} onClick={() => openInstallationActions(installation)} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

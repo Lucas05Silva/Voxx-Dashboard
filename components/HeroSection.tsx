@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { ShieldAlert } from 'lucide-react';
+import { Menu, ShieldAlert, X } from 'lucide-react';
 import { demoData } from '@/lib/demo/mockData';
 
 interface HeroSectionProps {
@@ -10,6 +11,25 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ mode, setMode }: HeroSectionProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const executiveLinks = [
+    { id: 'kpi-flow', label: 'KPIs' },
+    { id: 'ai-core', label: 'Insights IA' },
+    { id: 'alerts', label: 'Alertas' },
+    { id: 'charts', label: 'Graficos' },
+    { id: 'funnel', label: 'Funil' },
+  ];
+
+  const operationalLinks = [
+    { id: 'ops-clients', label: 'Clientes' },
+    { id: 'ops-finance', label: 'Financeiro' },
+    { id: 'ops-tickets', label: 'Tickets' },
+    { id: 'ops-installations', label: 'Instalacoes' },
+  ];
+
+  const quickLinks = mode === 'executivo' ? executiveLinks : operationalLinks;
+
   return (
     <motion.section 
       initial={{ opacity: 0, y: -20 }}
@@ -34,7 +54,55 @@ export function HeroSection({ mode, setMode }: HeroSectionProps) {
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-4">
+        <div className="flex w-full md:w-auto flex-col items-end gap-4">
+          <div className="md:hidden w-full flex justify-end">
+            <button
+              onClick={() => setMobileMenuOpen((current) => !current)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-xs font-bold uppercase tracking-widest text-gray-200"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              Menu
+            </button>
+          </div>
+
+          {mobileMenuOpen ? (
+            <div className="md:hidden w-full glass-panel rounded-xl border border-voxx-line p-4 space-y-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-voxx-cyan">Acesso Rapido</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setMode('executivo');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`px-3 py-2 rounded-lg text-xs font-bold ${mode === 'executivo' ? 'bg-voxx-cyan/10 text-voxx-cyan border border-voxx-cyan/40' : 'bg-voxx-surface text-gray-300 border border-voxx-line'}`}
+                >
+                  Executivo
+                </button>
+                <button
+                  onClick={() => {
+                    setMode('operacional');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`px-3 py-2 rounded-lg text-xs font-bold ${mode === 'operacional' ? 'bg-voxx-cyan/10 text-voxx-cyan border border-voxx-cyan/40' : 'bg-voxx-surface text-gray-300 border border-voxx-line'}`}
+                >
+                  Operacional
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {quickLinks.map((link) => (
+                  <a
+                    key={link.id}
+                    href={`#${link.id}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center px-2 py-2 rounded-lg bg-voxx-surface border border-voxx-line text-[10px] font-bold uppercase tracking-widest text-gray-300"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="flex items-center gap-4 bg-voxx-block/50 p-1.5 rounded-full border border-voxx-line backdrop-blur-md">
             <button 
               onClick={() => setMode('executivo')}
@@ -48,7 +116,7 @@ export function HeroSection({ mode, setMode }: HeroSectionProps) {
             </button>
           </div>
           
-          <div className="flex items-center gap-6">
+          <div className="hidden sm:flex items-center gap-6">
             <div className="text-right">
               <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Health Score</p>
               <div className="flex items-baseline justify-end gap-1">
