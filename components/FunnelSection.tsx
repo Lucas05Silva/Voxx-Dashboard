@@ -55,7 +55,7 @@ export function FunnelSection({ data = demoData }: { data?: DashboardData }) {
         <span className="flex-1 h-[1px] bg-voxx-line" />
       </h2>
 
-      <div className="relative w-full rounded-2xl overflow-hidden glass-panel p-4 md:p-8 border border-voxx-line">
+      <div className="relative w-full max-w-[1480px] mx-auto rounded-2xl overflow-hidden glass-panel p-4 md:p-8 border border-voxx-line">
         <div className="absolute inset-0 bg-gradient-to-r from-voxx-bg via-voxx-surface to-voxx-block opacity-50" />
 
         <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-4 xl:gap-0">
